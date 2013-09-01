@@ -18,8 +18,8 @@ signup(app);
  - `GET /signup`
  - `POST /signup`
  - `GET /signup/:token`
- - `GET /signup/resend-email-verification`
- - `POST /signup/resend-email-verification`
+ - `GET /signup/resend-verification`
+ - `POST /signup/resend-verification`
 
 ## Test
 
