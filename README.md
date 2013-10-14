@@ -1,5 +1,7 @@
 # sign up middleware for lockit
 
+[![Build Status](https://travis-ci.org/zeMirco/lockit-signup.png?branch=master)](https://travis-ci.org/zeMirco/lockit-signup)
+
 not ready yet .. come back later
 
 ## Installation
