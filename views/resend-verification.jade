@@ -1,0 +1,18 @@
+extend /layout
+
+block content
+  div.panel.panel-default
+    div.panel-heading Resend verification email
+    div.panel-body
+      p To activate your account you must first confirm your email address. 
+        | Enter your email and submit the form below, and we will resend the confirmation email.
+      form.form-horizontal(action="/signup/resend-verification", method="POST")
+        div.form-group
+          label.col-lg-2.col-md-2.col-sm-2.control-label(for="email") Email
+          div.col-lg-10.col-md-10.col-sm-10
+            input.form-control(type="email", id="email", name="email", placeholder="Your email")
+        if error
+          div.alert.alert-warning #{error}
+        div.form-group
+          div.col-lg-offset-2.col-md-offset-2.col-sm-offset-2.col-lg-10.col-md-10.col-sm-10
+            input(type="submit", class="btn btn-primary", value="Send email")

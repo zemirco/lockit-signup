@@ -1,0 +1,22 @@
+extend /layout
+
+block content
+  div.panel.panel-default
+    div.panel-heading Signup
+    div.panel-body
+      form(action="/signup", method="POST")
+        div.form-group
+          label(for="username") Username
+          input.form-control(type="text", id="username", name="username", placeholder="Pick a username")
+        div.form-group
+          label(for="email") Email
+          input.form-control(type="email", id="email", name="email", placeholder="Your email")
+        div.form-group
+          label(for="password") Password
+          input.form-control(type="password", id="password", name="password", placeholder="Create a password")
+        div.form-group
+          label(for="verification") Password verification
+          input.form-control(type="password", id="verification", name="verification")
+        if error
+          div.alert.alert-warning #{error}
+        input(type="submit", class="btn btn-primary", value="Signup")

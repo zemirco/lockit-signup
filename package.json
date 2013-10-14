@@ -1,0 +1,39 @@
+{
+  "name": "lockit-signup",
+  "version": "0.0.1",
+  "description": "signup module for lockit",
+  "main": "index.js",
+  "scripts": {
+    "test": "grunt"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zeMirco/lockit-signup"
+  },
+  "keywords": [
+    "lockit",
+    "signup",
+    "register"
+  ],
+  "author": {
+    "name": "Mirco Zeiss",
+    "email": "mirco.zeiss@gmail.com",
+    "twitter": "zeMirco"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "lockit-couchdb-adapter": "~0.0.2",
+    "lockit-sendmail": "~0.0.2",
+    "node-uuid": "~1.4.1"
+  },
+  "devDependencies": {
+    "should": "~1.2.2",
+    "supertest": "~0.7.1",
+    "nano": "~4.1.1",
+    "express": "3.3.5",
+    "jade": "*",
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.6.4",
+    "grunt-mocha-test": "~0.7.0"
+  }
+}

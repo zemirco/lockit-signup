@@ -1,0 +1,14 @@
+extend /layout
+
+block content
+  p This link has expired. Please enter your email below to send the activation link again.
+  div.panel.panel-default
+    div.panel-heading Resend verification email
+    div.panel-body
+      form(action="/signup/resend-email-verification", method="POST")
+        div.form-group
+          label(for="email") Email
+          input.form-control(type="email", id="email", name="email", placeholder="Your email")
+        if error
+          div.alert.alert-warning #{error}
+        input(type="submit", class="btn btn-primary", value="Submit")
