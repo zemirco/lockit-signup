@@ -266,10 +266,10 @@ describe('signup', function() {
 // remove user from db
 after(function(done) {
 
-  adapter.delete('username', 'john', function(err, res) {
+  adapter.remove('username', 'john', function(err, res) {
     if (err) console.log(err);
 
-    adapter.delete('username', 'jack', function(err, res) {
+    adapter.remove('username', 'jack', function(err, res) {
       if (err) console.log(err);
       console.log('users created during test were removed from db');
       done();
