@@ -1,8 +1,17 @@
-# sign up middleware for lockit
+# Lockit signup
 
 [![Build Status](https://travis-ci.org/zeMirco/lockit-signup.png?branch=master)](https://travis-ci.org/zeMirco/lockit-signup)
 
-not ready yet .. come back later
+Sign up users to your Express app. The module is part of [Lockit](https://github.com/zeMirco/lockit).
+
+Features:
+
+ - validate inputs
+ - hash password
+ - validation link expiration
+ - verify email address via unique tokens
+ - prevent duplicate email/username sign up
+ - resend verification email
 
 ## Installation
 
