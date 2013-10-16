@@ -38,6 +38,10 @@ signup(app, config);
 app.use(express.static(path.join(__dirname, 'public')));
 ```
 
+## Configuration
+
+More about configuration at [lockit](https://github.com/zeMirco/lockit).
+
 ## What do I get?
 
  - `GET /signup`
