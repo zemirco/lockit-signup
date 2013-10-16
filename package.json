@@ -1,6 +1,6 @@
 {
   "name": "lockit-signup",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "signup module for lockit",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "lockit-couchdb-adapter": "~0.0.2",
+    "lockit-couchdb-adapter": "~0.0.3",
     "lockit-sendmail": "~0.0.2",
     "node-uuid": "~1.4.1"
   },
