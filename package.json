@@ -23,7 +23,7 @@
   "license": "MIT",
   "dependencies": {
     "lockit-couchdb-adapter": "~0.0.3",
-    "lockit-sendmail": "~0.0.2",
+    "lockit-sendmail": "0.0.4",
     "node-uuid": "~1.4.1"
   },
   "devDependencies": {
