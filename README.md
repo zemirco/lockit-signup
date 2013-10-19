@@ -1,17 +1,10 @@
 # Lockit signup
 
-[![Build Status](https://travis-ci.org/zeMirco/lockit-signup.png?branch=master)](https://travis-ci.org/zeMirco/lockit-signup)
+[![Build Status](https://travis-ci.org/zeMirco/lockit-signup.png?branch=master)](https://travis-ci.org/zeMirco/lockit-signup) [![NPM version](https://badge.fury.io/js/lockit-signup.png)](http://badge.fury.io/js/lockit-signup)
+
+[![NPM](https://nodei.co/npm/lockit-signup.png)](https://nodei.co/npm/lockit-signup/)
 
 Sign up users to your Express app. The module is part of [Lockit](https://github.com/zeMirco/lockit).
-
-Features:
-
- - validate inputs
- - hash password
- - validation link expiration
- - verify email address via unique tokens
- - prevent duplicate email/username sign up
- - resend verification email
 
 ## Installation
 
@@ -42,7 +35,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 More about configuration at [lockit](https://github.com/zeMirco/lockit).
 
-## What do I get?
+## Features
+
+ - validate inputs
+ - hash password
+ - validation link expiration
+ - verify email address via unique tokens
+ - prevent duplicate email/username sign up
+ - resend verification email
+
+## Routes included
 
  - `GET /signup`
  - `POST /signup`
