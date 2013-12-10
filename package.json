@@ -24,7 +24,10 @@
   "dependencies": {
     "lockit-couchdb-adapter": "~0.0.3",
     "lockit-sendmail": "0.0.4",
-    "node-uuid": "~1.4.1"
+    "node-uuid": "~1.4.1",
+    "debug": "~0.7.3",
+    "ms": "~0.6.1",
+    "moment": "~2.4.0"
   },
   "devDependencies": {
     "should": "~1.2.2",
