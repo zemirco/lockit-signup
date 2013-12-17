@@ -25,18 +25,16 @@
     "lockit-couchdb-adapter": "~0.0.3",
     "lockit-sendmail": "0.0.4",
     "node-uuid": "~1.4.1",
-    "debug": "~0.7.3",
-    "ms": "~0.6.1",
-    "moment": "~2.4.0"
+    "debug": "~0.7.4",
+    "ms": "~0.6.2",
+    "moment": "~2.4.0",
+    "nano": "~4.2.1"
   },
   "devDependencies": {
-    "should": "~1.2.2",
-    "supertest": "~0.7.1",
-    "nano": "~4.1.1",
-    "express": "3.3.5",
-    "jade": "*",
-    "grunt": "~0.4.1",
-    "grunt-contrib-jshint": "~0.6.4",
-    "grunt-mocha-test": "~0.7.0"
+    "should": "~2.1.1",
+    "supertest": "~0.8.2",
+    "grunt": "~0.4.2",
+    "grunt-contrib-jshint": "~0.7.2",
+    "grunt-mocha-test": "~0.8.1"
   }
 }
