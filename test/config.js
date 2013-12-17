@@ -1,6 +1,5 @@
 exports.appname = 'Test App';
 exports.url = 'http://localhost:3000';
-exports.port = 3000; // Todo: use port instead full url
 
 // email settings
 exports.emailType = 'Stub';
@@ -14,17 +13,17 @@ exports.emailSettings = {
 
 // signup settings
 exports.signupRoute = '/signup';
-exports.signupTokenExpiration = 24 * 60 * 60 * 1000;
+exports.signupTokenExpiration = '1 day';
 
 // forgot password settings
 exports.forgotPasswordRoute = '/forgot-password';
-exports.forgotPasswordTokenExpiration = 24 * 60 * 60 * 1000;
+exports.forgotPasswordTokenExpiration = '1 day';
 
 // settings for test
 exports.db = 'couchdb';
-exports.dbUrl = 'http://127.0.0.1:5984/test';
+exports.dbUrl = 'http://127.0.0.1:5984/lockit';
 
-exports.emailTemplate = 'blank';
+exports.emailTemplate = 'lockit-template-blank';
 
 // email signup template
 exports.emailSignup = {
