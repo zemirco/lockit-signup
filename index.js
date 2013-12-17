@@ -8,7 +8,7 @@ var debug = require('debug')('lockit-signup');
 module.exports = function(app, config) {
   
   var adapter = require('lockit-' + config.db + '-adapter')(config);
-  var sendmail = require('lockit-sendmail')(config);
+  var Mail = require('lockit-sendmail')(config);
 
   // set up the default route
   var route = config.signupRoute || '/signup';
@@ -28,21 +28,18 @@ module.exports = function(app, config) {
     var username = req.body.username;
     var email = req.body.email;
     var password = req.body.password;
-    var verification = req.body.verification;
 
     var error = null;
     // regexp from https://github.com/angular/angular.js/blob/master/src/ng/directive/input.js#L4
     var EMAIL_REGEXP = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}$/;
 
     // check for valid inputs
-    if (!username || !email || !password || !verification) {
+    if (!username || !email || !password) {
       error = 'All fields are required';
     } else if (username !== encodeURIComponent(username)) {
       error = 'Username may not contain any non-url-safe characters';
     } else if (!email.match(EMAIL_REGEXP)) {
       error = 'Email is invalid';
-    } else if (password !== verification) {
-      error = 'Passwords don\'t match';
     }
 
     if (error) {
@@ -79,8 +76,8 @@ module.exports = function(app, config) {
           debug('email already in db');
           
           // send already registered email
-          var Email = new sendmail('emailSignupTaken');
-          Email.send(user.username, user.email, function(err, res) {
+          var mail = new Mail('emailSignupTaken');
+          mail.send(user.username, user.email, function(err, res) {
             if (err) console.log(err);
             response.render(path.join(__dirname, 'views', 'post-signup'), {
               title: 'Sign up - Email sent'
@@ -97,8 +94,8 @@ module.exports = function(app, config) {
           if (err) console.log(err);
 
           // send email with link for address verification
-          var Email = new sendmail('emailSignup');
-          Email.send(user.username, user.email, user.signupToken, function(err, res) {
+          var mail = new Mail('emailSignup');
+          mail.send(user.username, user.email, user.signupToken, function(err, res) {
             if (err) console.log(err);
             response.render(path.join(__dirname, 'views', 'post-signup'), {
               title: 'Sign up - Email sent'
@@ -178,8 +175,8 @@ module.exports = function(app, config) {
         if (err) console.log(err);
 
         // send sign up email
-        var Email = new sendmail('emailResendVerification');
-        Email.send(user.username, email, token, function(err, res) {
+        var mail = new Mail('emailResendVerification');
+        mail.send(user.username, email, token, function(err, res) {
           if (err) console.log(err);
           response.render(path.join(__dirname, 'views', 'post-signup'), {
             title: 'Sign up - Email sent'
