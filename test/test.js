@@ -1,7 +1,6 @@
 
 var request = require('supertest');
 var should = require('should');
-var nano = require('nano');
 
 var config = require('./config.js');
 var app = require('./app.js')(config);
@@ -55,7 +54,7 @@ describe('signup', function() {
     it('should return an error when one input is blank', function(done) {
       request(app)
         .post('/signup')
-        .send({username: '', email: 'john@wayne.com', password: 'secret', verification: 'secret'})
+        .send({username: '', email: 'john@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(403);
           res.text.should.include('All fields are required');
@@ -66,7 +65,7 @@ describe('signup', function() {
     it('should return an error when username contains non-url-safe chars', function(done) {
       request(app)
         .post('/signup')
-        .send({username: 'john@', email: 'john@wayne.com', password: 'secret', verification: 'secret'})
+        .send({username: 'john@', email: 'john@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(403);
           res.text.should.include('Username may not contain any non-url-safe characters');
@@ -77,21 +76,10 @@ describe('signup', function() {
     it('should return an error when email has invalid format', function(done) {
       request(app)
         .post('/signup')
-        .send({username: 'john', email: 'johnwayne.com', password: 'secret', verification: 'secret'})
+        .send({username: 'john', email: 'johnwayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(403);
           res.text.should.include('Email is invalid');
-          done();
-        });
-    });
-    
-    it('should return an error when password does not match verification', function(done) {
-      request(app)
-        .post('/signup')
-        .send({username: 'john', email: 'john@wayne.com', password: 'secret', verification: 'notsame'})
-        .end(function(error, res) {
-          res.statusCode.should.equal(403);
-          res.text.should.include('Passwords don\'t match');
           done();
         });
     });
@@ -100,7 +88,7 @@ describe('signup', function() {
     it('should render a success message when everything went fine', function(done) {
       request(app)
         .post('/signup')
-        .send({username: 'john', email: 'john@wayne.com', password: 'secret', verification: 'secret'})
+        .send({username: 'john', email: 'john@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(200);
           res.text.should.include('<title>Sign up - Email sent</title>');
@@ -112,7 +100,7 @@ describe('signup', function() {
     it('should return an error message username is already taken', function(done) {
       request(app)
         .post('/signup')
-        .send({username: 'john', email: 'john@wayne.com', password: 'secret', verification: 'secret'})
+        .send({username: 'john', email: 'john@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(403);
           res.text.should.include('<title>Sign up</title>');
@@ -124,7 +112,7 @@ describe('signup', function() {
     it('should render a success message when duplicate email was found', function(done) {
       request(app)
         .post('/signup')
-        .send({username: 'jeff', email: 'john@wayne.com', password: 'secret', verification: 'secret'})
+        .send({username: 'jeff', email: 'john@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(200);
           res.text.should.include('<title>Sign up - Email sent</title>');
@@ -152,7 +140,7 @@ describe('signup', function() {
       // first sign up a new user -> jack
       request(secondApp)
         .post('/signmeup')
-        .send({username: 'jack', email: 'jack@wayne.com', password: 'secret', verification: 'secret'})
+        .send({username: 'jack', email: 'jack@wayne.com', password: 'secret'})
         .end(function(err, res) {
           if (err) console.log(err);
 
