@@ -37,6 +37,7 @@
     "grunt-mocha-test": "~0.8.1",
     "jade": "~1.0.0",
     "express": "~3.4.7",
-    "grunt-contrib-jshint": "~0.8.0"
+    "grunt-contrib-jshint": "~0.8.0",
+    "nano": "~4.2.1"
   }
 }
