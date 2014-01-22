@@ -5,14 +5,14 @@ var should = require('should');
 var config = require('./config.js');
 var app = require('./app.js')(config);
 
-var adapter = require('lockit-' + config.db + '-adapter')(config);
+var adapter = require('lockit-couchdb-adapter')(config);
 
 // clone config object
 var secondConfig = JSON.parse(JSON.stringify(config));
 // set some custom properties
-secondConfig.signupRoute = '/signmeup';
+secondConfig.signup.route = '/signmeup';
 secondConfig.port = 4000;
-secondConfig.signupTokenExpiration = 10;
+secondConfig.signup.tokenExpiration = '10 ms';
 
 // create a second app with alternative config
 var secondApp = require('./app.js')(secondConfig);

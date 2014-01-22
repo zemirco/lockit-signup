@@ -3,20 +3,29 @@ var path = require('path');
 var uuid = require('node-uuid');
 var ms = require('ms');
 var moment = require('moment');
+var utls = require('lockit-utils');
 var debug = require('debug')('lockit-signup');
 
 module.exports = function(app, config) {
   
-  var adapter = require('lockit-' + config.db + '-adapter')(config);
+  var db = utls.getDatabase(config);
+  
+  var adapter = require(db.adapter)(config);
   var Mail = require('lockit-sendmail')(config);
+  
+  var cfg = config.signup;
 
   // set up the default route
-  var route = config.signupRoute || '/signup';
+  var route = cfg.route || '/signup';
 
   // GET /signup
   app.get(route, function(req, res) {
     debug('GET %s', route);
-    res.render(path.join(__dirname, 'views', 'get-signup'), {
+
+    // custom or built-in view
+    var view = cfg.views.signup || path.join(__dirname, 'views', 'get-signup');
+
+    res.render(view, {
       title: 'Sign up'
     });
   });
@@ -42,11 +51,14 @@ module.exports = function(app, config) {
       error = 'Email is invalid';
     }
 
+    // custom or built-in view
+    var errorView = cfg.views.signup || path.join(__dirname, 'views', 'get-signup');
+
     if (error) {
       debug('POST error: %s', error);
       // render template with error message
       response.status(403);
-      response.render(path.join(__dirname, 'views', 'get-signup'), {
+      response.render(errorView, {
         title: 'Sign up',
         error: error
       });
@@ -61,7 +73,7 @@ module.exports = function(app, config) {
         debug('username already taken');
         // render template with error message
         response.status(403);
-        response.render(path.join(__dirname, 'views', 'get-signup'), {
+        response.render(errorView, {
           title: 'Sign up',
           error: 'Username already taken'
         });
@@ -71,6 +83,9 @@ module.exports = function(app, config) {
       // check for duplicate email - send reminder when duplicate email is found
       adapter.find('email', email, function(err, user) {
         if (err) console.log(err);
+
+        // custom or built-in view
+        var successView = cfg.views.signedUp || path.join(__dirname, 'views', 'post-signup');
         
         if (user) {
           debug('email already in db');
@@ -79,7 +94,7 @@ module.exports = function(app, config) {
           var mail = new Mail('emailSignupTaken');
           mail.send(user.username, user.email, function(err, res) {
             if (err) console.log(err);
-            response.render(path.join(__dirname, 'views', 'post-signup'), {
+            response.render(successView, {
               title: 'Sign up - Email sent'
             });
           });
@@ -97,7 +112,7 @@ module.exports = function(app, config) {
           var mail = new Mail('emailSignup');
           mail.send(user.username, user.email, user.signupToken, function(err, res) {
             if (err) console.log(err);
-            response.render(path.join(__dirname, 'views', 'post-signup'), {
+            response.render(successView, {
               title: 'Sign up - Email sent'
             });
           });
@@ -113,7 +128,11 @@ module.exports = function(app, config) {
   // GET /signup/resend-verification
   app.get(route + '/resend-verification', function(req, res) {
     debug('GET %s/resend-verification', route);
-    res.render(path.join(__dirname, 'views', 'resend-verification'), {
+
+    // custom or built-in view
+    var view = cfg.views.resend || path.join(__dirname, 'views', 'resend-verification');
+    
+    res.render(view, {
       title: 'Resend verification email'
     });
   });
@@ -133,9 +152,13 @@ module.exports = function(app, config) {
 
     if (error) {
       debug('POST error: %s', error);
+
+      // custom or built-in view
+      var errorView = cfg.views.resend || path.join(__dirname, 'views', 'resend-verification');
+      
       // render template with error message
       response.status(403);
-      response.render(path.join(__dirname, 'views', 'resend-verification'), {
+      response.render(errorView, {
         title: 'Resend verification email',
         error: error
       });
@@ -146,13 +169,16 @@ module.exports = function(app, config) {
     adapter.find('email', email, function(err, user) {
       if (err) console.log(err);
 
+      // custom or built-in view
+      var successView = cfg.views.signedUp || path.join(__dirname, 'views', 'post-signup');
+
       // no user with that email address exists -> just render success message
       // or email address is already verified -> user has to use password reset function
       if (!user || user.emailVerified) {
         debug('no user found or email is not verified');
 
         response.status(200);
-        response.render(path.join(__dirname, 'views', 'post-signup'), {
+        response.render(successView, {
           title: 'Sign up - Email sent'
         });
         return;
@@ -167,7 +193,7 @@ module.exports = function(app, config) {
       user.signupToken = token;
 
       // set new sign up token expiration date
-      var timespan = ms(config.signupTokenExpiration);
+      var timespan = ms(cfg.tokenExpiration);
       user.signupTokenExpires = moment().add(timespan, 'ms').toDate();
       
       // save updated user to db
@@ -178,7 +204,7 @@ module.exports = function(app, config) {
         var mail = new Mail('emailResendVerification');
         mail.send(user.username, email, token, function(err, res) {
           if (err) console.log(err);
-          response.render(path.join(__dirname, 'views', 'post-signup'), {
+          response.render(successView, {
             title: 'Sign up - Email sent'
           });
         });
@@ -219,8 +245,11 @@ module.exports = function(app, config) {
         adapter.update(user, function(err, res) {
           if (err) console.log(err);
 
+          // custom or built-in view
+          var expiredView = cfg.views.linkExpired || path.join(__dirname, 'views', 'link-expired');
+
           // render template to allow resending verification email
-          response.render(path.join(__dirname, 'views', 'link-expired'), {
+          response.render(expiredView, {
             title: 'Sign up - Email verification link expired'
           });
 
@@ -243,8 +272,11 @@ module.exports = function(app, config) {
       adapter.update(user, function(err, res) {
         if (err) console.log(err);
 
+        // custom or built-in view
+        var view = cfg.views.verified || path.join(__dirname, 'views', 'mail-verification-success');
+
         // render email verification success view
-        response.render(path.join(__dirname, 'views', 'mail-verification-success'), {
+        response.render(view, {
           title: 'Sign up success'
         });
 

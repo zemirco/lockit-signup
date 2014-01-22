@@ -12,16 +12,27 @@ exports.emailSettings = {
 };
 
 // signup settings
-exports.signupRoute = '/signup';
-exports.signupTokenExpiration = '1 day';
+//exports.signupRoute = '/signup';
+//exports.signupTokenExpiration = '1 day';
+
+exports.signup = {
+  route: '/signup',
+  tokenExpiration: '1 day',
+  views: {
+    signup: '',         // input fields 'username', 'email' and 'password' | local variable 'error' | POST /'signup.route'
+    linkExpired: '',    // message link has expired | input field 'email' | POST /'signup.route'/resend-verification
+    verified: '',       // message email is now verified and maybe link to /'login.route'
+    signedUp: '',       // message email has been sent => check your inbox
+    resend: ''          // input field 'email' | local variable 'error' | POST /'signup.route'/resend-verification
+  }
+};
 
 // forgot password settings
 exports.forgotPasswordRoute = '/forgot-password';
 exports.forgotPasswordTokenExpiration = '1 day';
 
 // settings for test
-exports.db = 'couchdb';
-exports.dbUrl = 'http://127.0.0.1:5984/test';
+exports.db = 'http://127.0.0.1:5984/test';
 
 exports.emailTemplate = 'lockit-template-blank';
 
