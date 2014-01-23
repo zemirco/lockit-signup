@@ -22,7 +22,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "lockit-couchdb-adapter": "~0.0.4",
     "lockit-template-blank": "~0.0.1",
     "node-uuid": "~1.4.1",
     "debug": "~0.7.4",
@@ -31,6 +30,7 @@
     "lockit-sendmail": "~0.1.0"
   },
   "devDependencies": {
+    "lockit-couchdb-adapter": "0.1.0",
     "should": "~2.1.1",
     "supertest": "~0.8.2",
     "grunt": "~0.4.2",
@@ -38,6 +38,7 @@
     "jade": "~1.0.0",
     "express": "~3.4.7",
     "grunt-contrib-jshint": "~0.8.0",
-    "nano": "~4.2.1"
+    "nano": "~4.2.1",
+    "lockit-utils": "0.1.0"
   }
 }
