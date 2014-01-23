@@ -9,13 +9,30 @@ var adapter = require('lockit-couchdb-adapter')(config);
 
 // clone config object
 var secondConfig = JSON.parse(JSON.stringify(config));
+
 // set some custom properties
 secondConfig.signup.route = '/signmeup';
 secondConfig.port = 4000;
 secondConfig.signup.tokenExpiration = '10 ms';
+secondConfig.signup.views = {
+  signup: 'custom/signup',
+  signedUp: 'custom/signedUp',
+  linkExpired: 'custom/linkExpired',
+  resend: 'custom/resend',
+  verified: 'custom/verified'
+};
 
 // create a second app with alternative config
 var secondApp = require('./app.js')(secondConfig);
+
+// clone config object
+var thirdConfig = JSON.parse(JSON.stringify(secondConfig));
+
+thirdConfig.signup.tokenExpiration = '1 hour';
+thirdConfig.port = 6000;
+
+// create another app
+var thirdApp = require('./app.js')(thirdConfig);
 
 // start the test
 describe('signup', function() {
@@ -34,17 +51,25 @@ describe('signup', function() {
     });
 
     it('should use the route provided', function(done) {
-
       // request the second app with custom url
       request(secondApp)
         .get('/signmeup')
         .end(function(error, res) {
           res.statusCode.should.equal(200);
-          res.text.should.include('Signup');
-          res.text.should.include('<title>Sign up</title>');
+          res.text.should.include('<p>This is my custom view.</p>');
           done();
         });
+    });
 
+    it('should use the custom template', function(done) {
+      // request the second app with custom template
+      request(secondApp)
+        .get('/signmeup')
+        .end(function(error, res) {
+          res.statusCode.should.equal(200);
+          res.text.should.include('<p>This is my custom view.</p>');
+          done();
+        });
     });
     
   });
@@ -120,6 +145,17 @@ describe('signup', function() {
           done();
         });
     });
+
+    it('should use the custom template', function(done) {
+      // request the second app with custom template
+      request(secondApp)
+        .post('/signmeup')
+        .send({username: 'jeff', email: 'john@wayne.com', password: 'secret'})
+        .end(function(error, res) {
+          res.text.should.include('<p>Yes you did it!</p>');
+          done();
+        });
+    });
     
   });
   
@@ -135,7 +171,7 @@ describe('signup', function() {
         });
     });
 
-    it('should render an error message when signup token has expired', function(done) {
+    it('should render an error message when signup token has expired and use custom view', function(done) {
 
       // first sign up a new user -> jack
       request(secondApp)
@@ -153,7 +189,7 @@ describe('signup', function() {
               .get('/signmeup/' + user.signupToken)
               .end(function(error, res) {
                 res.statusCode.should.equal(200);
-                res.text.should.include('This link has expired');
+                res.text.should.include('Nope, not valid anymore!');
                 done();
               });
 
@@ -181,6 +217,33 @@ describe('signup', function() {
       });
             
     });
+
+    it('should render the custom template', function(done) {
+
+      // first sign up a new user
+      request(thirdApp)
+        .post('/signmeup')
+        .send({username: 'jim', email: 'jim@wayne.com', password: 'secret'})
+        .end(function(err, res) {
+          if (err) console.log(err);
+
+          // second get jack's signup token
+          adapter.find('username', 'jim', function(err, user) {
+            if (err) console.log(err);
+
+            // third call url with token
+            request(thirdApp)
+              .get('/signmeup/' + user.signupToken)
+              .end(function(error, res) {
+                res.text.should.include('You are awesome!');
+                done();
+              });
+
+          });
+
+        });
+
+    });
     
   });
   
@@ -193,6 +256,15 @@ describe('signup', function() {
           res.statusCode.should.equal(200);
           res.text.should.include('To activate your account you must first confirm your email address');
           res.text.should.include('<title>Resend verification email</title>');
+          done();
+        });
+    });
+
+    it('should use the custom template', function(done) {
+      request(secondApp)
+        .get('/signmeup/resend-verification')
+        .end(function(error, res) {
+          res.text.should.include('Did not get it');
           done();
         });
     });
@@ -259,8 +331,13 @@ after(function(done) {
 
     adapter.remove('username', 'jack', function(err, res) {
       if (err) console.log(err);
-      console.log('users created during test were removed from db');
-      done();
+
+      adapter.remove('username', 'jim', function(err, res) {
+        if (err) console.log(err);
+        console.log('users created during test were removed from db');
+        done();
+
+      });
 
     });
 
