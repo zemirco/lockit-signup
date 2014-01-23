@@ -15,11 +15,11 @@ secondConfig.signup.route = '/signmeup';
 secondConfig.port = 4000;
 secondConfig.signup.tokenExpiration = '10 ms';
 secondConfig.signup.views = {
-  signup: 'custom/signup',
-  signedUp: 'custom/signedUp',
-  linkExpired: 'custom/linkExpired',
-  resend: 'custom/resend',
-  verified: 'custom/verified'
+  signup: './custom/signup',
+  signedUp: './custom/signedUp',
+  linkExpired: './custom/linkExpired',
+  resend: './custom/resend',
+  verified: './custom/verified'
 };
 
 // create a second app with alternative config
