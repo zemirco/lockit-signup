@@ -34,6 +34,13 @@ thirdConfig.port = 6000;
 // create another app
 var thirdApp = require('./app.js')(thirdConfig);
 
+// REST tests
+var config_4 = JSON.parse(JSON.stringify(config));
+config_4.port = 6000;
+config_4.rest = true;
+config_4.signup.tokenExpiration = '10 ms';
+var app_4 = require('./app.js')(config_4);
+
 // start the test
 describe('signup', function() {
   
@@ -71,6 +78,16 @@ describe('signup', function() {
           done();
         });
     });
+
+    it('should not handle the route when REST is active', function(done) {
+      // request the second app with custom template
+      request(app_4)
+        .get('/rest/login')
+        .end(function(error, res) {
+          res.statusCode.should.equal(404);
+          done();
+        });
+    });
     
   });
   
@@ -86,6 +103,17 @@ describe('signup', function() {
           done();
         });
     });
+
+    it('should return an error when one input is blank (REST)', function(done) {
+      request(app_4)
+        .post('/rest/signup')
+        .send({username: '', email: 'john@wayne.com', password: 'secret'})
+        .end(function(error, res) {
+          res.statusCode.should.equal(403);
+          res.text.should.equal('{"error":"All fields are required"}');
+          done();
+        });
+    });
     
     it('should return an error when username contains non-url-safe chars', function(done) {
       request(app)
@@ -97,6 +125,17 @@ describe('signup', function() {
           done();
         });
     });
+
+    it('should return an error when username contains non-url-safe chars (REST)', function(done) {
+      request(app_4)
+        .post('/rest/signup')
+        .send({username: 'john@', email: 'john@wayne.com', password: 'secret'})
+        .end(function(error, res) {
+          res.statusCode.should.equal(403);
+          res.text.should.equal('{"error":"Username may not contain any non-url-safe characters"}');
+          done();
+        });
+    });
     
     it('should return an error when email has invalid format', function(done) {
       request(app)
@@ -105,6 +144,17 @@ describe('signup', function() {
         .end(function(error, res) {
           res.statusCode.should.equal(403);
           res.text.should.include('Email is invalid');
+          done();
+        });
+    });
+
+    it('should return an error when email has invalid format (REST)', function(done) {
+      request(app_4)
+        .post('/rest/signup')
+        .send({username: 'john', email: 'johnwayne.com', password: 'secret'})
+        .end(function(error, res) {
+          res.statusCode.should.equal(403);
+          res.text.should.equal('{"error":"Email is invalid"}');
           done();
         });
     });
@@ -122,6 +172,17 @@ describe('signup', function() {
         });
     });
 
+    it('should render a success message when everything went fine (REST)', function(done) {
+      request(app_4)
+        .post('/rest/signup')
+        .send({username: 'steve', email: 'steve@wayne.com', password: 'secret'})
+        .end(function(error, res) {
+          res.statusCode.should.equal(200);
+          res.text.should.equal('OK');
+          done();
+        });
+    });
+
     it('should return an error message username is already taken', function(done) {
       request(app)
         .post('/signup')
@@ -134,6 +195,17 @@ describe('signup', function() {
         });
     });
 
+    it('should return an error message username is already taken (REST)', function(done) {
+      request(app_4)
+        .post('/rest/signup')
+        .send({username: 'john', email: 'john@wayne.com', password: 'secret'})
+        .end(function(error, res) {
+          res.statusCode.should.equal(403);
+          res.text.should.equal('{"error":"Username already taken"}');
+          done();
+        });
+    });
+
     it('should render a success message when duplicate email was found', function(done) {
       request(app)
         .post('/signup')
@@ -142,6 +214,17 @@ describe('signup', function() {
           res.statusCode.should.equal(200);
           res.text.should.include('<title>Sign up - Email sent</title>');
           res.text.should.include('Email with verification link sent. Please check your inbox.');
+          done();
+        });
+    });
+
+    it('should render a success message when duplicate email was found (REST)', function(done) {
+      request(app_4)
+        .post('/rest/signup')
+        .send({username: 'jeff', email: 'john@wayne.com', password: 'secret'})
+        .end(function(error, res) {
+          res.statusCode.should.equal(200);
+          res.text.should.equal('OK');
           done();
         });
     });
@@ -167,6 +250,15 @@ describe('signup', function() {
         .end(function(error, res) {
           res.statusCode.should.equal(404);
           res.text.should.include('Cannot GET /signup/id123');
+          done();
+        });
+    });
+
+    it('should render 404 message when token is invalid (REST)', function(done) {
+      request(app_4)
+        .get('/rest/signup/id123')
+        .end(function(error, res) {
+          res.statusCode.should.equal(404);
           done();
         });
     });
@@ -198,6 +290,34 @@ describe('signup', function() {
         });
 
     });
+
+    it('should render an error message when signup token has expired (REST)', function(done) {
+
+      // first sign up a new user -> jack
+      request(app_4)
+        .post('/rest/signup')
+        .send({username: 'beep', email: 'beep@wayne.com', password: 'secret'})
+        .end(function(err, res) {
+          if (err) console.log(err);
+
+          // second get jack's signup token
+          adapter.find('username', 'beep', function(err, user) {
+            if (err) console.log(err);
+
+            // third call url with token
+            request(app_4)
+              .get('/rest/signup/' + user.signupToken)
+              .end(function(error, res) {
+                res.statusCode.should.equal(403);
+                res.text.should.equal('{"error":"token expired"}');
+                done();
+              });
+
+          });
+
+        });
+
+    });
     
     it('should render a success message when token is valid', function(done) {
       
@@ -216,6 +336,32 @@ describe('signup', function() {
         
       });
             
+    });
+
+    it('should render a success message when token is valid (REST)', function(done) {
+
+      request(app)
+        .post('/signup')
+        .send({username: 'steward', email: 'steward@wayne.com', password: 'secret'})
+        .end(function(error, res) {
+
+          // get token for our test user 'john'
+          adapter.find('username', 'steward', function(err, user) {
+            if (err) console.log(err);
+
+            // request url with token
+            request(app_4)
+              .get('/rest/signup/' + user.signupToken)
+              .end(function(error, res) {
+                res.statusCode.should.equal(200);
+                res.text.should.equal('OK');
+                done();
+              });
+
+          });
+            
+        });
+
     });
 
     it('should render the custom template', function(done) {
@@ -268,6 +414,15 @@ describe('signup', function() {
           done();
         });
     });
+
+    it('should not catch the route when REST is active', function(done) {
+      request(app_4)
+        .get('/rest/signup/resend-verification')
+        .end(function(error, res) {
+          res.statusCode.should.equal(404);
+          done();
+        });
+    });
     
   });
   
@@ -283,6 +438,17 @@ describe('signup', function() {
           done();
         });
     });
+
+    it('should return an error when email has invalid format (REST)', function(done) {
+      request(app_4)
+        .post('/rest/signup/resend-verification')
+        .send({email: 'johnwayne.com'})
+        .end(function(error, res) {
+          res.statusCode.should.equal(403);
+            res.text.should.equal('{"error":"Email is invalid"}');
+          done();
+        });
+    });
     
     it('should render a success message when no existing user was found', function(done) {
       request(app)
@@ -291,6 +457,17 @@ describe('signup', function() {
         .end(function(error, res) {
           res.statusCode.should.equal(200);
           res.text.should.include('Email with verification link sent');
+          done();
+        });
+    });
+
+    it('should render a success message when no existing user was found (REST)', function(done) {
+      request(app_4)
+        .post('/rest/signup/resend-verification')
+        .send({email: 'jim@wayne.com'})
+        .end(function(error, res) {
+          res.statusCode.should.equal(200);
+          res.text.should.equal('OK');
           done();
         });
     });
@@ -306,6 +483,17 @@ describe('signup', function() {
           done();
         });
     });
+
+    it('should render a succes message when email address is already verified (REST)', function(done) {
+      request(app_4)
+        .post('/rest/signup/resend-verification')
+        .send({email: 'john@wayne.com'})
+        .end(function(error, res) {
+          res.statusCode.should.equal(200);
+          res.text.should.equal('OK');
+          done();
+        });
+    });
     
     // jack has signed up but didn't visit /signup/:token
     it('should render a success message when email was sent', function(done) {
@@ -315,6 +503,17 @@ describe('signup', function() {
         .end(function(error, res) {
           res.statusCode.should.equal(200);
           res.text.should.include('Email with verification link sent');
+          done();
+        });
+    });
+
+    it('should render a success message when email was sent (REST)', function(done) {
+      request(app_4)
+        .post('/rest/signup/resend-verification')
+        .send({email: 'jack@wayne.com'})
+        .end(function(error, res) {
+          res.statusCode.should.equal(200);
+          res.text.should.equal('OK');
           done();
         });
     });
@@ -334,8 +533,24 @@ after(function(done) {
 
       adapter.remove('username', 'jim', function(err, res) {
         if (err) console.log(err);
-        console.log('users created during test were removed from db');
-        done();
+        
+        adapter.remove('username', 'steve', function(err, res) {
+          if (err) console.log(err);
+          
+          adapter.remove('username', 'beep', function(err, res) {
+            if (err) console.log(err);
+            
+            adapter.remove('username', 'steward', function(err, res) {
+              if (err) console.log(err);
+              
+              console.log('users created during test were removed from db');
+              done();
+
+            });
+
+          });
+
+        });
 
       });
 
