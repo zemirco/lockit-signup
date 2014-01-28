@@ -51,7 +51,18 @@ More about configuration at [lockit](https://github.com/zeMirco/lockit).
  - `GET /signup/:token`
  - `GET /signup/resend-verification`
  - `POST /signup/resend-verification`
+ 
+## REST API
 
+If you've set `exports.rest = true` in your `config.js` the module behaves as follows.
+
+ - all routes have `/rest` prepended
+ - `GET /rest/signup` is `next()`ed and you can catch `/signup` on the client
+ - `POST /rest/signup` stays the same but only sends JSON
+ - `GET /rest/signup/:token` sends JSON
+ - `GET /rest/signup/resend-verification` is `next()`ed and you can catch `/signup/resend-verification` on the client
+ - `POST /rest/signup/resend-verification` sends JSON
+ 
 ## Test
 
 `grunt`
