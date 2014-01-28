@@ -18,9 +18,15 @@ module.exports = function(app, config) {
   // set up the default route
   var route = cfg.route || '/signup';
 
+  // change URLs if REST is active
+  if (config.rest) route = '/rest' + route;
+
   // GET /signup
-  app.get(route, function(req, res) {
+  app.get(route, function(req, res, next) {
     debug('GET %s', route);
+
+    // do not handle the route when REST is active
+    if (config.rest) return next();
 
     // custom or built-in view
     var view = cfg.views.signup || path.join(__dirname, 'views', 'get-signup');
@@ -56,6 +62,10 @@ module.exports = function(app, config) {
 
     if (error) {
       debug('POST error: %s', error);
+
+      // send only JSON when REST is active
+      if (config.rest) return response.json(403, {error: error});
+      
       // render template with error message
       response.status(403);
       response.render(errorView, {
@@ -71,11 +81,15 @@ module.exports = function(app, config) {
       
       if (user) {
         debug('username already taken');
+        error = 'Username already taken';
+        // send only JSON when REST is active
+        if (config.rest) return response.json(403, {error: error});
+        
         // render template with error message
         response.status(403);
         response.render(errorView, {
           title: 'Sign up',
-          error: 'Username already taken'
+          error: error
         });
         return;
       }
@@ -94,6 +108,10 @@ module.exports = function(app, config) {
           var mail = new Mail('emailSignupTaken');
           mail.send(user.username, user.email, function(err, res) {
             if (err) console.log(err);
+
+            // send only JSON when REST is active
+            if (config.rest) return response.send(200);
+            
             response.render(successView, {
               title: 'Sign up - Email sent'
             });
@@ -112,6 +130,10 @@ module.exports = function(app, config) {
           var mail = new Mail('emailSignup');
           mail.send(user.username, user.email, user.signupToken, function(err, res) {
             if (err) console.log(err);
+
+            // send only JSON when REST is active
+            if (config.rest) return response.send(200);
+            
             response.render(successView, {
               title: 'Sign up - Email sent'
             });
@@ -126,8 +148,11 @@ module.exports = function(app, config) {
   });
   
   // GET /signup/resend-verification
-  app.get(route + '/resend-verification', function(req, res) {
+  app.get(route + '/resend-verification', function(req, res, next) {
     debug('GET %s/resend-verification', route);
+
+    // do not handle the route when REST is active
+    if (config.rest) return next();
 
     // custom or built-in view
     var view = cfg.views.resend || path.join(__dirname, 'views', 'resend-verification');
@@ -153,6 +178,9 @@ module.exports = function(app, config) {
     if (error) {
       debug('POST error: %s', error);
 
+      // send only JSON when REST is active
+      if (config.rest) return response.json(403, {error: error});
+
       // custom or built-in view
       var errorView = cfg.views.resend || path.join(__dirname, 'views', 'resend-verification');
       
@@ -176,6 +204,9 @@ module.exports = function(app, config) {
       // or email address is already verified -> user has to use password reset function
       if (!user || user.emailVerified) {
         debug('no user found or email is not verified');
+
+        // send only JSON when REST is active
+        if (config.rest) return response.send(200);
 
         response.status(200);
         response.render(successView, {
@@ -204,6 +235,10 @@ module.exports = function(app, config) {
         var mail = new Mail('emailResendVerification');
         mail.send(user.username, email, token, function(err, res) {
           if (err) console.log(err);
+
+          // send only JSON when REST is active
+          if (config.rest) return response.send(200);
+          
           response.render(successView, {
             title: 'Sign up - Email sent'
           });
@@ -245,6 +280,9 @@ module.exports = function(app, config) {
         adapter.update(user, function(err, res) {
           if (err) console.log(err);
 
+          // send only JSON when REST is active
+          if (config.rest) return response.json(403, {error: 'token expired'});
+
           // custom or built-in view
           var expiredView = cfg.views.linkExpired || path.join(__dirname, 'views', 'link-expired');
 
@@ -271,6 +309,9 @@ module.exports = function(app, config) {
       // save user with updated values to db
       adapter.update(user, function(err, res) {
         if (err) console.log(err);
+
+        // send only JSON when REST is active
+        if (config.rest) return response.send(200);
 
         // custom or built-in view
         var view = cfg.views.verified || path.join(__dirname, 'views', 'mail-verification-success');
