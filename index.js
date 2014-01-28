@@ -21,8 +21,22 @@ module.exports = function(app, config) {
   // change URLs if REST is active
   if (config.rest) route = '/rest' + route;
 
+  /**
+   * Routes 
+   */
+  
+  app.get(route, getSignup);
+  app.post(route, postSignup);
+  app.get(route + '/resend-verification', getSignupResend);
+  app.post(route + '/resend-verification', postSignupResend);
+  app.get(route + '/:token', getSignupToken);
+
+  /**
+   * Route handlers 
+   */
+  
   // GET /signup
-  app.get(route, function(req, res, next) {
+  function getSignup(req, res, next) {
     debug('GET %s', route);
 
     // do not handle the route when REST is active
@@ -34,10 +48,10 @@ module.exports = function(app, config) {
     res.render(view, {
       title: 'Sign up'
     });
-  });
+  }
 
   // POST /signup
-  app.post(route, function(req, response) {
+  function postSignup(req, response) {
     debug('POST %s: %j', route, req.body);
 
     var username = req.body.username;
@@ -65,7 +79,7 @@ module.exports = function(app, config) {
 
       // send only JSON when REST is active
       if (config.rest) return response.json(403, {error: error});
-      
+
       // render template with error message
       response.status(403);
       response.render(errorView, {
@@ -74,17 +88,17 @@ module.exports = function(app, config) {
       });
       return;
     }
-    
+
     // check for duplicate username
     adapter.find('username', username, function(err, user) {
       if (err) console.log(err);
-      
+
       if (user) {
         debug('username already taken');
         error = 'Username already taken';
         // send only JSON when REST is active
         if (config.rest) return response.json(403, {error: error});
-        
+
         // render template with error message
         response.status(403);
         response.render(errorView, {
@@ -93,17 +107,17 @@ module.exports = function(app, config) {
         });
         return;
       }
-      
+
       // check for duplicate email - send reminder when duplicate email is found
       adapter.find('email', email, function(err, user) {
         if (err) console.log(err);
 
         // custom or built-in view
         var successView = cfg.views.signedUp || path.join(__dirname, 'views', 'post-signup');
-        
+
         if (user) {
           debug('email already in db');
-          
+
           // send already registered email
           var mail = new Mail('emailSignupTaken');
           mail.send(user.username, user.email, function(err, res) {
@@ -111,7 +125,7 @@ module.exports = function(app, config) {
 
             // send only JSON when REST is active
             if (config.rest) return response.send(200);
-            
+
             response.render(successView, {
               title: 'Sign up - Email sent'
             });
@@ -119,7 +133,7 @@ module.exports = function(app, config) {
 
           return;
         }
-        
+
         // looks like everything is fine
 
         // save new user to db
@@ -133,22 +147,21 @@ module.exports = function(app, config) {
 
             // send only JSON when REST is active
             if (config.rest) return response.send(200);
-            
+
             response.render(successView, {
               title: 'Sign up - Email sent'
             });
           });
 
         });
-        
+
       });
-      
+
     });
-    
-  });
+  }
   
-  // GET /signup/resend-verification
-  app.get(route + '/resend-verification', function(req, res, next) {
+  // GET /signup/resend-verification  
+  function getSignupResend(req, res, next) {
     debug('GET %s/resend-verification', route);
 
     // do not handle the route when REST is active
@@ -156,14 +169,14 @@ module.exports = function(app, config) {
 
     // custom or built-in view
     var view = cfg.views.resend || path.join(__dirname, 'views', 'resend-verification');
-    
+
     res.render(view, {
       title: 'Resend verification email'
     });
-  });
+  }
   
-  // POST /signup/resend-verification
-  app.post(route + '/resend-verification', function(req, response) {
+  // POST /signup/resend-verification  
+  function postSignupResend(req, response) {
     debug('POST %s/resend-verification: %j', route, req.body);
     var email = req.body.email;
 
@@ -183,7 +196,7 @@ module.exports = function(app, config) {
 
       // custom or built-in view
       var errorView = cfg.views.resend || path.join(__dirname, 'views', 'resend-verification');
-      
+
       // render template with error message
       response.status(403);
       response.render(errorView, {
@@ -192,7 +205,7 @@ module.exports = function(app, config) {
       });
       return;
     }
-    
+
     // check for user with given email address
     adapter.find('email', email, function(err, user) {
       if (err) console.log(err);
@@ -214,9 +227,9 @@ module.exports = function(app, config) {
         });
         return;
       }
-      
+
       // we have an existing user with provided email address
-      
+
       // create new signup token
       var token = uuid.v4();
 
@@ -226,7 +239,7 @@ module.exports = function(app, config) {
       // set new sign up token expiration date
       var timespan = ms(cfg.tokenExpiration);
       user.signupTokenExpires = moment().add(timespan, 'ms').toDate();
-      
+
       // save updated user to db
       adapter.update(user, function(err, res) {
         if (err) console.log(err);
@@ -238,7 +251,7 @@ module.exports = function(app, config) {
 
           // send only JSON when REST is active
           if (config.rest) return response.send(200);
-          
+
           response.render(successView, {
             title: 'Sign up - Email sent'
           });
@@ -247,12 +260,11 @@ module.exports = function(app, config) {
       });
 
     });
-    
-  });
+  }
 
   // route is at the end so it does not catch :token === 'resend-verification'
-  // GET /signup/:token
-  app.get(route + '/:token', function(req, response, next) {
+  // GET /signup/:token  
+  function getSignupToken(req, response, next) {
     var token = req.params.token;
     debug('GET %s with token: %s', route, token);
 
@@ -324,7 +336,6 @@ module.exports = function(app, config) {
       });
 
     });
-
-  });
+  }
   
 };
