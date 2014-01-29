@@ -6,6 +6,18 @@ var moment = require('moment');
 var utls = require('lockit-utils');
 var debug = require('debug')('lockit-signup');
 
+/**
+ * Internal helper functions
+ */
+
+function join(view) {
+  return path.join(__dirname, 'views', view);
+}
+
+/**
+ * Let's get serious
+ */
+
 module.exports = function(app, config) {
   
   var db = utls.getDatabase(config);
@@ -43,7 +55,7 @@ module.exports = function(app, config) {
     if (config.rest) return next();
 
     // custom or built-in view
-    var view = cfg.views.signup || path.join(__dirname, 'views', 'get-signup');
+    var view = cfg.views.signup || join('get-signup');
 
     res.render(view, {
       title: 'Sign up'
@@ -72,7 +84,7 @@ module.exports = function(app, config) {
     }
 
     // custom or built-in view
-    var errorView = cfg.views.signup || path.join(__dirname, 'views', 'get-signup');
+    var errorView = cfg.views.signup || join('get-signup');
 
     if (error) {
       debug('POST error: %s', error);
@@ -113,7 +125,7 @@ module.exports = function(app, config) {
         if (err) console.log(err);
 
         // custom or built-in view
-        var successView = cfg.views.signedUp || path.join(__dirname, 'views', 'post-signup');
+        var successView = cfg.views.signedUp || join('post-signup');
 
         if (user) {
           debug('email already in db');
@@ -168,7 +180,7 @@ module.exports = function(app, config) {
     if (config.rest) return next();
 
     // custom or built-in view
-    var view = cfg.views.resend || path.join(__dirname, 'views', 'resend-verification');
+    var view = cfg.views.resend || join('resend-verification');
 
     res.render(view, {
       title: 'Resend verification email'
@@ -195,7 +207,7 @@ module.exports = function(app, config) {
       if (config.rest) return response.json(403, {error: error});
 
       // custom or built-in view
-      var errorView = cfg.views.resend || path.join(__dirname, 'views', 'resend-verification');
+      var errorView = cfg.views.resend || join('resend-verification');
 
       // render template with error message
       response.status(403);
@@ -211,7 +223,7 @@ module.exports = function(app, config) {
       if (err) console.log(err);
 
       // custom or built-in view
-      var successView = cfg.views.signedUp || path.join(__dirname, 'views', 'post-signup');
+      var successView = cfg.views.signedUp || join('post-signup');
 
       // no user with that email address exists -> just render success message
       // or email address is already verified -> user has to use password reset function
@@ -296,7 +308,7 @@ module.exports = function(app, config) {
           if (config.rest) return response.json(403, {error: 'token expired'});
 
           // custom or built-in view
-          var expiredView = cfg.views.linkExpired || path.join(__dirname, 'views', 'link-expired');
+          var expiredView = cfg.views.linkExpired || join('link-expired');
 
           // render template to allow resending verification email
           response.render(expiredView, {
@@ -326,7 +338,7 @@ module.exports = function(app, config) {
         if (config.rest) return response.send(200);
 
         // custom or built-in view
-        var view = cfg.views.verified || path.join(__dirname, 'views', 'mail-verification-success');
+        var view = cfg.views.verified || join('mail-verification-success');
 
         // render email verification success view
         response.render(view, {
