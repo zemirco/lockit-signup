@@ -31,6 +31,20 @@ function start(config) {
   app.use(express.methodOverride());
   app.use(express.cookieParser('your secret here'));
   app.use(express.cookieSession());
+  
+  // testing csrf
+  if (config.csrf) {
+    app.use(express.csrf());
+    app.use(function(req, res, next) {
+      
+      var token = req.csrfToken();
+      res.locals._csrf = token;
+      
+      // save token to a cookie so we can easily access it on the client
+      res.cookie('csrf', token);
+      next();
+    });
+  }
 
   // use forgot password middleware with testing options
   signup(app, config);
