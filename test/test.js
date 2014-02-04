@@ -714,16 +714,15 @@ describe('lockit-signup', function() {
     var _config = JSON.parse(JSON.stringify(config));
     _config.port = 8000;
     _config.csrf = true;
+    _config.signup.tokenExpiration = '1 ms';
 
     var _app = app(_config);
         
     describe('GET /signup', function() {
-      
       it('should include the token in the view', function(done) {
         request(_app)
           .get('/signup')
           .end(function(err, res) {
-
             // dirty hack to get the cookie token
             var token = decodeURIComponent(res.header['set-cookie'][0].split(';')[0].substring(5));
             res.statusCode.should.equal(200);
@@ -731,13 +730,12 @@ describe('lockit-signup', function() {
             done();
           });
       });
-      
     });
     
     describe('GET /signup/resend-verification', function() {
       it('should include the token in the view', function(done) {
         request(_app)
-          .get('/signup')
+          .get('/signup/resend-verification')
           .end(function(err, res) {
 
             var token = decodeURIComponent(res.header['set-cookie'][0].split(';')[0].substring(5));
@@ -746,6 +744,31 @@ describe('lockit-signup', function() {
             done();
           });
       });
+    });
+
+    describe('GET /signup/:token', function() {
+      it('should include the token in the view', function(done) {
+
+        // need to create another adapter so token expires immediately
+        var _adapter = require('lockit-couchdb-adapter')(_config);
+
+        _adapter.save('csrf', 'csrf@email.com', 'pass', function() {
+          _adapter.find('username', 'csrf', function(err, user) {
+            request(_app)
+              .get('/signup/' + user.signupToken)
+              .end(function(err, res) {
+                var token = decodeURIComponent(res.header['set-cookie'][0].split(';')[0].substring(5));
+                res.statusCode.should.equal(200);
+                res.text.should.include(token);
+                done();
+              });
+          });
+        });
+      });
+    });
+    
+    after(function(done) {
+      adapter.remove('username', 'csrf', done);
     });
 
   });
