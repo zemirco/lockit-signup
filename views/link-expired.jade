@@ -6,6 +6,7 @@ block content
     div.panel-heading Resend verification email
     div.panel-body
       form(action="/signup/resend-verification", method="POST")
+        input(type="hidden", name="_csrf", value=_csrf)
         div.form-group
           label(for="email") Email
           input.form-control(type="email", id="email", name="email", placeholder="Your email")

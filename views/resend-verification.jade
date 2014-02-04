@@ -7,6 +7,7 @@ block content
       p To activate your account you must first confirm your email address. 
         | Enter your email and submit the form below, and we will resend the confirmation email.
       form(action="/signup/resend-verification", method="POST")
+        input(type="hidden", name="_csrf", value=_csrf)
         div.form-group
           label(for="email") Email
           input.form-control(type="email", id="email", name="email", placeholder="Your email")
