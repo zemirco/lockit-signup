@@ -39,6 +39,7 @@
     "express": "~3.4.7",
     "grunt-contrib-jshint": "~0.8.0",
     "nano": "~4.2.1",
-    "lockit-utils": "0.1.0"
+    "lockit-utils": "0.1.0",
+    "cookie": "~0.1.0"
   }
 }
