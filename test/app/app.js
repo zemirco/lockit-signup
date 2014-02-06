@@ -9,7 +9,7 @@ var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
 
-var signup = require('../index.js');
+var signup = require('../../index.js');
 
 function start(config) {
 
