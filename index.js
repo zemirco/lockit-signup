@@ -6,6 +6,10 @@ var moment = require('moment');
 var utls = require('lockit-utils');
 var debug = require('debug')('lockit-signup');
 
+// require event emitter
+var events = require('events');
+var util = require('util');
+
 /**
  * Internal helper functions
  */
@@ -18,13 +22,19 @@ function join(view) {
  * Let's get serious
  */
 
-module.exports = function(app, config) {
-  
+var Signup = module.exports = function(app, config) {
+
+  if (!(this instanceof Signup)) {
+    return new Signup(app, config);
+  }
+
+  var that = this;
+
   var db = utls.getDatabase(config);
-  
+
   var adapter = require(db.adapter)(config);
   var Mail = require('lockit-sendmail')(config);
-  
+
   var cfg = config.signup;
 
   // set up the default route
@@ -34,9 +44,9 @@ module.exports = function(app, config) {
   if (config.rest) route = '/rest' + route;
 
   /**
-   * Routes 
+   * Routes
    */
-  
+
   app.get(route, getSignup);
   app.post(route, postSignup);
   app.get(route + '/resend-verification', getSignupResend);
@@ -44,9 +54,9 @@ module.exports = function(app, config) {
   app.get(route + '/:token', getSignupToken);
 
   /**
-   * Route handlers 
+   * Route handlers
    */
-  
+
   // GET /signup
   function getSignup(req, res, next) {
     debug('GET %s', route);
@@ -171,7 +181,7 @@ module.exports = function(app, config) {
 
     });
   }
-  
+
   // GET /signup/resend-verification  
   function getSignupResend(req, res, next) {
     debug('GET %s/resend-verification', route);
@@ -186,7 +196,7 @@ module.exports = function(app, config) {
       title: 'Resend verification email'
     });
   }
-  
+
   // POST /signup/resend-verification  
   function postSignupResend(req, response) {
     debug('POST %s/resend-verification: %j', route, req.body);
@@ -334,20 +344,31 @@ module.exports = function(app, config) {
       adapter.update(user, function(err, res) {
         if (err) console.log(err);
 
-        // send only JSON when REST is active
-        if (config.rest) return response.send(200);
+        // emit 'signup' event
+        that.emit('signup', user, response);
+        
+        if (cfg.handleResponse) {
+          
+          // send only JSON when REST is active
+          if (config.rest) return response.send(200);
 
-        // custom or built-in view
-        var view = cfg.views.verified || join('mail-verification-success');
+          // custom or built-in view
+          var view = cfg.views.verified || join('mail-verification-success');
 
-        // render email verification success view
-        response.render(view, {
-          title: 'Sign up success'
-        });
+          // render email verification success view
+          response.render(view, {
+            title: 'Sign up success'
+          });
+          
+        }
 
       });
 
     });
   }
-  
+
+  events.EventEmitter.call(this);
+
 };
+
+util.inherits(Signup, events.EventEmitter);
