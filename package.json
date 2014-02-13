@@ -40,6 +40,7 @@
     "grunt-contrib-jshint": "~0.8.0",
     "nano": "~4.2.1",
     "lockit-utils": "0.1.0",
-    "cookie": "~0.1.0"
+    "cookie": "~0.1.0",
+    "superagent": "~0.16.0"
   }
 }
