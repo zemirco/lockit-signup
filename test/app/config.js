@@ -21,7 +21,8 @@ exports.signup = {
     verified: '',       // message email is now verified and maybe link to /'login.route'
     signedUp: '',       // message email has been sent => check your inbox
     resend: ''          // input field 'email' | local variable 'error' | POST /'signup.route'/resend-verification
-  }
+  },
+  handleResponse: true
 };
 
 // settings for test
