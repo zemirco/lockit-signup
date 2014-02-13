@@ -9,7 +9,7 @@ var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
 
-var signup = require('../../index.js');
+var Signup = require('../../index.js');
 
 function start(config) {
 
@@ -47,7 +47,7 @@ function start(config) {
   }
 
   // use forgot password middleware with testing options
-  signup(app, config);
+  var signup = new Signup(app, config);
 
   app.use(app.router);
   app.use(express.static(path.join(__dirname, 'public')));
