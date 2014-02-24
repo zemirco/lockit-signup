@@ -341,7 +341,7 @@ var Signup = module.exports = function(app, config) {
       delete user.signupTokenExpires;
 
       // save user with updated values to db
-      adapter.update(user, function(err, res) {
+      adapter.update(user, function(err, user) {
         if (err) console.log(err);
 
         // emit 'signup' event
