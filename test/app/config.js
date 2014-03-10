@@ -25,6 +25,11 @@ exports.signup = {
   handleResponse: true
 };
 
+// forgot password settings
+exports.forgotPassword = {
+  route: '/forgot-password',
+};
+
 // settings for test
 exports.db = 'http://127.0.0.1:5984/test';
 
