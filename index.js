@@ -1,4 +1,3 @@
-
 var path = require('path');
 var uuid = require('node-uuid');
 var ms = require('ms');
@@ -39,9 +38,6 @@ var Signup = module.exports = function(app, config) {
 
   // set up the default route
   var route = cfg.route || '/signup';
-
-  // change URLs if REST is active
-  if (config.rest) route = '/rest' + route;
 
   /**
    * Routes
