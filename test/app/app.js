@@ -27,19 +27,20 @@ function start(config) {
   // make JSON output simpler for testing
   app.set('json spaces', 0);
   app.use(express.favicon());
-  app.use(express.bodyParser());
+  app.use(express.urlencoded());
+  app.use(express.json());
   app.use(express.methodOverride());
   app.use(express.cookieParser('your secret here'));
   app.use(express.cookieSession());
-  
+
   // testing csrf
   if (config.csrf) {
     app.use(express.csrf());
     app.use(function(req, res, next) {
-      
+
       var token = req.csrfToken();
       res.locals._csrf = token;
-      
+
       // save token to a cookie so we can easily access it on the client
       res.cookie('csrf', token);
       next();
@@ -60,9 +61,7 @@ function start(config) {
   app.get('/', routes.index);
   app.get('/users', user.list);
 
-  http.createServer(app).listen(app.get('port'), function(){
-    console.log('Express server listening on port ' + app.get('port'));
-  });
+  http.createServer(app).listen(app.get('port'));
 
   return app;
 
