@@ -4,7 +4,6 @@ var uuid = require('node-uuid');
 var ms = require('ms');
 var moment = require('moment');
 var utls = require('lockit-utils');
-var debug = require('debug')('lockit-signup');
 
 // require event emitter
 var events = require('events');
@@ -59,8 +58,6 @@ var Signup = module.exports = function(app, config) {
 
   // GET /signup
   function getSignup(req, res, next) {
-    debug('GET %s', route);
-
     // do not handle the route when REST is active
     if (config.rest) return next();
 
@@ -74,7 +71,6 @@ var Signup = module.exports = function(app, config) {
 
   // POST /signup
   function postSignup(req, response) {
-    debug('POST %s: %j', route, req.body);
 
     var username = req.body.username;
     var email = req.body.email;
@@ -97,8 +93,6 @@ var Signup = module.exports = function(app, config) {
     var errorView = cfg.views.signup || join('get-signup');
 
     if (error) {
-      debug('POST error: %s', error);
-
       // send only JSON when REST is active
       if (config.rest) return response.json(403, {error: error});
 
@@ -116,7 +110,6 @@ var Signup = module.exports = function(app, config) {
       if (err) console.log(err);
 
       if (user) {
-        debug('username already taken');
         error = 'Username already taken';
         // send only JSON when REST is active
         if (config.rest) return response.json(403, {error: error});
@@ -138,8 +131,6 @@ var Signup = module.exports = function(app, config) {
         var successView = cfg.views.signedUp || join('post-signup');
 
         if (user) {
-          debug('email already in db');
-
           // send already registered email
           var mail = new Mail('emailSignupTaken');
           mail.send(user.username, user.email, function(err, res) {
@@ -182,10 +173,8 @@ var Signup = module.exports = function(app, config) {
     });
   }
 
-  // GET /signup/resend-verification  
+  // GET /signup/resend-verification
   function getSignupResend(req, res, next) {
-    debug('GET %s/resend-verification', route);
-
     // do not handle the route when REST is active
     if (config.rest) return next();
 
@@ -197,9 +186,8 @@ var Signup = module.exports = function(app, config) {
     });
   }
 
-  // POST /signup/resend-verification  
+  // POST /signup/resend-verification
   function postSignupResend(req, response) {
-    debug('POST %s/resend-verification: %j', route, req.body);
     var email = req.body.email;
 
     var error = null;
@@ -211,8 +199,6 @@ var Signup = module.exports = function(app, config) {
     }
 
     if (error) {
-      debug('POST error: %s', error);
-
       // send only JSON when REST is active
       if (config.rest) return response.json(403, {error: error});
 
@@ -238,8 +224,6 @@ var Signup = module.exports = function(app, config) {
       // no user with that email address exists -> just render success message
       // or email address is already verified -> user has to use password reset function
       if (!user || user.emailVerified) {
-        debug('no user found or email is not verified');
-
         // send only JSON when REST is active
         if (config.rest) return response.send(200);
 
@@ -285,10 +269,9 @@ var Signup = module.exports = function(app, config) {
   }
 
   // route is at the end so it does not catch :token === 'resend-verification'
-  // GET /signup/:token  
+  // GET /signup/:token
   function getSignupToken(req, response, next) {
     var token = req.params.token;
-    debug('GET %s with token: %s', route, token);
 
     // verify format of token
     var re = new RegExp('[0-9a-f]{22}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', 'i');
@@ -305,8 +288,7 @@ var Signup = module.exports = function(app, config) {
 
       // check if token has expired
       if (new Date(user.signupTokenExpires) < new Date()) {
-        debug('signup token has expired');
-
+        
         // delete old token
         delete user.signupToken;
 
@@ -346,9 +328,9 @@ var Signup = module.exports = function(app, config) {
 
         // emit 'signup' event
         that.emit('signup', user, response);
-        
+
         if (cfg.handleResponse) {
-          
+
           // send only JSON when REST is active
           if (config.rest) return response.send(200);
 
@@ -359,7 +341,7 @@ var Signup = module.exports = function(app, config) {
           response.render(view, {
             title: 'Sign up success'
           });
-          
+
         }
 
       });
