@@ -1,4 +1,3 @@
-
 var path = require('path');
 var uuid = require('node-uuid');
 var ms = require('ms');
@@ -137,7 +136,7 @@ var Signup = module.exports = function(app, config) {
             if (err) console.log(err);
 
             // send only JSON when REST is active
-            if (config.rest) return response.send(200);
+            if (config.rest) return response.send(204);
 
             response.render(successView, {
               title: 'Sign up - Email sent'
@@ -159,7 +158,7 @@ var Signup = module.exports = function(app, config) {
             if (err) console.log(err);
 
             // send only JSON when REST is active
-            if (config.rest) return response.send(200);
+            if (config.rest) return response.send(204);
 
             response.render(successView, {
               title: 'Sign up - Email sent'
@@ -225,7 +224,7 @@ var Signup = module.exports = function(app, config) {
       // or email address is already verified -> user has to use password reset function
       if (!user || user.emailVerified) {
         // send only JSON when REST is active
-        if (config.rest) return response.send(200);
+        if (config.rest) return response.send(204);
 
         response.status(200);
         response.render(successView, {
@@ -256,7 +255,7 @@ var Signup = module.exports = function(app, config) {
           if (err) console.log(err);
 
           // send only JSON when REST is active
-          if (config.rest) return response.send(200);
+          if (config.rest) return response.send(204);
 
           response.render(successView, {
             title: 'Sign up - Email sent'
@@ -332,7 +331,7 @@ var Signup = module.exports = function(app, config) {
         if (cfg.handleResponse) {
 
           // send only JSON when REST is active
-          if (config.rest) return response.send(200);
+          if (config.rest) return response.send(204);
 
           // custom or built-in view
           var view = cfg.views.verified || join('mail-verification-success');
