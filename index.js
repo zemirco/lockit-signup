@@ -1,4 +1,3 @@
-
 var path = require('path');
 var uuid = require('node-uuid');
 var ms = require('ms');
