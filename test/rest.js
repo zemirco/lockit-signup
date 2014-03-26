@@ -75,8 +75,7 @@ describe('# with REST enabled', function() {
         .post('/rest/signup')
         .send({username: 'steve', email: 'steve@wayne.com', password: 'secret'})
         .end(function(error, res) {
-          res.statusCode.should.equal(200);
-          res.text.should.equal('OK');
+          res.statusCode.should.equal(204);
           done();
         });
     });
@@ -97,8 +96,7 @@ describe('# with REST enabled', function() {
         .post('/rest/signup')
         .send({username: 'jeff', email: 'steve@wayne.com', password: 'secret'})
         .end(function(error, res) {
-          res.statusCode.should.equal(200);
-          res.text.should.equal('OK');
+          res.statusCode.should.equal(204);
           done();
         });
     });
@@ -156,8 +154,7 @@ describe('# with REST enabled', function() {
             request(_app_one)
               .get('/rest/signup/' + user.signupToken)
               .end(function(error, res) {
-                res.statusCode.should.equal(200);
-                res.text.should.equal('OK');
+                res.statusCode.should.equal(204);
                 done();
               });
 
@@ -200,8 +197,7 @@ describe('# with REST enabled', function() {
         .post('/rest/signup/resend-verification')
         .send({email: 'jim@wayne.com'})
         .end(function(error, res) {
-          res.statusCode.should.equal(200);
-          res.text.should.equal('OK');
+          res.statusCode.should.equal(204);
           done();
         });
     });
@@ -211,8 +207,7 @@ describe('# with REST enabled', function() {
         .post('/rest/signup/resend-verification')
         .send({email: 'steward@wayne.com'})
         .end(function(error, res) {
-          res.statusCode.should.equal(200);
-          res.text.should.equal('OK');
+          res.statusCode.should.equal(204);
           done();
         });
     });
@@ -225,8 +220,7 @@ describe('# with REST enabled', function() {
           .post('/rest/signup/resend-verification')
           .send({email: 'mike@email.com'})
           .end(function(error, res) {
-            res.statusCode.should.equal(200);
-            res.text.should.equal('OK');
+            res.statusCode.should.equal(204);
             done();
           });
       });
