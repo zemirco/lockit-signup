@@ -3,7 +3,6 @@ var path = require('path');
 var uuid = require('node-uuid');
 var ms = require('ms');
 var moment = require('moment');
-var utls = require('lockit-utils');
 
 // require event emitter
 var events = require('events');
@@ -21,19 +20,12 @@ function join(view) {
  * Let's get serious
  */
 
-var Signup = module.exports = function(app, config) {
+var Signup = module.exports = function(app, config, adapter) {
 
-  if (!(this instanceof Signup)) {
-    return new Signup(app, config);
-  }
+  if (!(this instanceof Signup)) return new Signup(app, config, adapter);
 
-  var that = this;
-
-  var db = utls.getDatabase(config);
-
-  var adapter = require(db.adapter)(config);
   var Mail = require('lockit-sendmail')(config);
-
+  var that = this;
   var cfg = config.signup;
 
   // set up the default route
@@ -157,6 +149,9 @@ var Signup = module.exports = function(app, config) {
           var mail = new Mail('emailSignup');
           mail.send(user.username, user.email, user.signupToken, function(err, res) {
             if (err) console.log(err);
+
+            // emit event
+            that.emit('signup::post', user);
 
             // send only JSON when REST is active
             if (config.rest) return response.send(204);
