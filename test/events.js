@@ -22,7 +22,10 @@ app.use(express.cookieSession());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 http.createServer(app).listen(app.get('port'));
-var signup = new Signup(app, config);
+
+var db = utls.getDatabase(config);
+var adapter = require(db.adapter)(config);
+var signup = new Signup(app, config, adapter);
 
 // create second app that manually handles responses
 var config_two = JSON.parse(JSON.stringify(config));
@@ -39,10 +42,7 @@ app_two.use(express.cookieSession());
 app_two.use(app_two.router);
 app_two.use(express.static(path.join(__dirname, 'public')));
 http.createServer(app_two).listen(app_two.get('port'));
-var signup_two = new Signup(app_two, config_two);
-
-var db = utls.getDatabase(config);
-var adapter = require(db.adapter)(config);
+var signup_two = new Signup(app_two, config_two, adapter);
 
 describe('# event listeners', function() {
 

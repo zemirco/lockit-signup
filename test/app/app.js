@@ -8,6 +8,7 @@ var routes = require('./routes');
 var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
+var lockitUtils = require('lockit-utils');
 
 var Signup = require('../../index.js');
 
@@ -48,7 +49,9 @@ function start(config) {
   }
 
   // use forgot password middleware with testing options
-  var signup = new Signup(app, config);
+  var db = lockitUtils.getDatabase(config);
+  var adapter = require(db.adapter)(config);
+  var signup = new Signup(app, config, adapter);
 
   app.use(app.router);
   app.use(express.static(path.join(__dirname, 'public')));
