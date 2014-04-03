@@ -110,8 +110,8 @@ describe('# event listeners', function() {
   });
 
   after(function(done) {
-    adapter.remove('username', 'event', function() {
-      adapter.remove('username', 'event_two', done);
+    adapter.remove('event', function() {
+      adapter.remove('event_two', done);
     });
   });
 

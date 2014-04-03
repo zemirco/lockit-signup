@@ -8,11 +8,11 @@ var app = require('./app/app.js');
 var adapter = require('lockit-couchdb-adapter')(config);
 
 var _app = app(config);
-  
+
 describe('# default config', function() {
-  
+
   describe('GET /signup', function() {
-    
+
     it('should use the default route', function(done) {
       request(_app)
         .get('/signup')
@@ -23,9 +23,9 @@ describe('# default config', function() {
           done();
         });
     });
-    
+
   });
-  
+
   describe('POST /signup', function() {
 
     it('should return an error when one input is blank', function(done) {
@@ -96,9 +96,9 @@ describe('# default config', function() {
           done();
         });
     });
-    
+
   });
-  
+
   describe('GET /signup/:token', function() {
 
     it('should render 404 message when token is invalid', function(done) {
@@ -125,9 +125,9 @@ describe('# default config', function() {
           });
       });
     });
-    
+
   });
-  
+
   describe('GET /signup/resend-verification', function() {
 
     it('should render template with email input', function(done) {
@@ -140,9 +140,9 @@ describe('# default config', function() {
           done();
         });
     });
-    
+
   });
-  
+
   describe('POST /signup/resend-verification', function() {
 
     it('should return an error when email has invalid format', function(done) {
@@ -193,11 +193,11 @@ describe('# default config', function() {
     });
 
   });
-  
+
   after(function(done) {
-    adapter.remove('username', 'john', function() {
-      adapter.remove('username', 'marc', done);
+    adapter.remove('john', function() {
+      adapter.remove('marc', done);
     });
   });
-  
+
 });

@@ -229,10 +229,10 @@ describe('# with REST enabled', function() {
   });
 
   after(function(done) {
-    adapter.remove('username', 'beep', function() {
-      adapter.remove('username', 'steve', function() {
-        adapter.remove('username', 'steward', function() {
-          adapter.remove('username', 'mike', done);
+    adapter.remove('beep', function() {
+      adapter.remove('steve', function() {
+        adapter.remove('steward', function() {
+          adapter.remove('mike', done);
         });
       });
     });

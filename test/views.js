@@ -136,9 +136,9 @@ describe('# custom views', function() {
   });
 
   after(function(done) {
-    adapter.remove('username', 'jeff', function() {
-      adapter.remove('username', 'jim', function() {
-        adapter.remove('username', 'jack', done);
+    adapter.remove('jeff', function() {
+      adapter.remove('jim', function() {
+        adapter.remove('jack', done);
       });
     });
   });
