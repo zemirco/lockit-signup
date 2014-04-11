@@ -29,7 +29,7 @@
     "lockit-sendmail": "0.1.2"
   },
   "devDependencies": {
-    "lockit-couchdb-adapter": "0.3.0",
+    "lockit-couchdb-adapter": "0.4.0",
     "should": "~2.1.1",
     "supertest": "~0.8.2",
     "grunt": "~0.4.2",
@@ -38,7 +38,7 @@
     "express": "~3.4.7",
     "grunt-contrib-jshint": "~0.8.0",
     "nano": "~4.2.1",
-    "lockit-utils": "0.1.0",
+    "lockit-utils": "0.2.0",
     "cookie": "~0.1.0",
     "superagent": "~0.16.0"
   }
