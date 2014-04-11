@@ -64,7 +64,7 @@ var Signup = module.exports = function(app, config, adapter) {
   // POST /signup
   function postSignup(req, response) {
 
-    var username = req.body.username;
+    var name = req.body.name;
     var email = req.body.email;
     var password = req.body.password;
 
@@ -73,9 +73,9 @@ var Signup = module.exports = function(app, config, adapter) {
     var EMAIL_REGEXP = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}$/;
 
     // check for valid inputs
-    if (!username || !email || !password) {
+    if (!name || !email || !password) {
       error = 'All fields are required';
-    } else if (username !== encodeURIComponent(username)) {
+    } else if (name !== encodeURIComponent(name)) {
       error = 'Username may not contain any non-url-safe characters';
     } else if (!email.match(EMAIL_REGEXP)) {
       error = 'Email is invalid';
@@ -97,8 +97,8 @@ var Signup = module.exports = function(app, config, adapter) {
       return;
     }
 
-    // check for duplicate username
-    adapter.find('username', username, function(err, user) {
+    // check for duplicate name
+    adapter.find('name', name, function(err, user) {
       if (err) console.log(err);
 
       if (user) {
@@ -125,7 +125,7 @@ var Signup = module.exports = function(app, config, adapter) {
         if (user) {
           // send already registered email
           var mail = new Mail('emailSignupTaken');
-          mail.send(user.username, user.email, function(err, res) {
+          mail.send(user.name, user.email, function(err, res) {
             if (err) console.log(err);
 
             // send only JSON when REST is active
@@ -142,12 +142,12 @@ var Signup = module.exports = function(app, config, adapter) {
         // looks like everything is fine
 
         // save new user to db
-        adapter.save(username, email, password, function(err, user) {
+        adapter.save(name, email, password, function(err, user) {
           if (err) console.log(err);
 
           // send email with link for address verification
           var mail = new Mail('emailSignup');
-          mail.send(user.username, user.email, user.signupToken, function(err, res) {
+          mail.send(user.name, user.email, user.signupToken, function(err, res) {
             if (err) console.log(err);
 
             // emit event
@@ -246,7 +246,7 @@ var Signup = module.exports = function(app, config, adapter) {
 
         // send sign up email
         var mail = new Mail('emailResendVerification');
-        mail.send(user.username, email, token, function(err, res) {
+        mail.send(user.name, email, token, function(err, res) {
           if (err) console.log(err);
 
           // send only JSON when REST is active
