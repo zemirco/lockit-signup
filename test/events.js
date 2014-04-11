@@ -53,7 +53,7 @@ describe('# event listeners', function() {
     // create a user with verified email
     adapter.save('event', 'event@email.com', 'password', function() {
       // verify email for boat
-      adapter.find('username', 'event', function(err, user) {
+      adapter.find('name', 'event', function(err, user) {
         token = uuid.v4();
         user.signupToken = token;
         // save updated user to db
@@ -61,7 +61,7 @@ describe('# event listeners', function() {
           // create second user
           adapter.save('event_two', 'event_two@email.com', 'password', function() {
             // verify email for boat
-            adapter.find('username', 'event_two', function(err, user) {
+            adapter.find('name', 'event_two', function(err, user) {
               token_two = uuid.v4();
               user.signupToken = token_two;
               // save updated user to db
@@ -80,7 +80,7 @@ describe('# event listeners', function() {
 
     it('should emit a "signup" event on success', function(done) {
       signup.on('signup', function(user, res) {
-        user.username.should.equal('event');
+        user.name.should.equal('event');
         user.email.should.equal('event@email.com');
         done();
       });

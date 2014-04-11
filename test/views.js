@@ -54,7 +54,7 @@ describe('# custom views', function() {
       // request the second app with custom template
       request(_app_one)
         .post('/signup')
-        .send({username: 'jeff', email: 'jeff@wayne.com', password: 'secret'})
+        .send({name: 'jeff', email: 'jeff@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.text.should.include('<p>Yes you did it!</p>');
           done();
@@ -70,12 +70,12 @@ describe('# custom views', function() {
       // first sign up a new user -> jack
       request(_app_one)
         .post('/signup')
-        .send({username: 'jack', email: 'jack@wayne.com', password: 'secret'})
+        .send({name: 'jack', email: 'jack@wayne.com', password: 'secret'})
         .end(function(err, res) {
           if (err) console.log(err);
 
           // second get jack's signup token
-          adapter.find('username', 'jack', function(err, user) {
+          adapter.find('name', 'jack', function(err, user) {
             if (err) console.log(err);
 
             // third call url with token
@@ -98,12 +98,12 @@ describe('# custom views', function() {
       // first sign up a new user
       request(_app_two)
         .post('/signup')
-        .send({username: 'jim', email: 'jim@wayne.com', password: 'secret'})
+        .send({name: 'jim', email: 'jim@wayne.com', password: 'secret'})
         .end(function(err, res) {
           if (err) console.log(err);
 
           // second get jim's signup token
-          adapter.find('username', 'jim', function(err, user) {
+          adapter.find('name', 'jim', function(err, user) {
             if (err) console.log(err);
 
             // third call url with token

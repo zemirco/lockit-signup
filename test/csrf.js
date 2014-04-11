@@ -50,7 +50,7 @@ describe('# with csrf', function() {
       var _adapter = require('lockit-couchdb-adapter')(_config);
 
       _adapter.save('csrf', 'csrf@email.com', 'pass', function() {
-        _adapter.find('username', 'csrf', function(err, user) {
+        _adapter.find('name', 'csrf', function(err, user) {
           request(_app)
               .get('/signup/' + user.signupToken)
               .end(function(err, res) {

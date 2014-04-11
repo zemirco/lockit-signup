@@ -40,7 +40,7 @@ describe('# with REST enabled', function() {
     it('should return an error when one input is blank (REST)', function(done) {
       request(_app_one)
         .post('/rest/signup')
-        .send({username: '', email: 'some@email.com', password: 'secret'})
+        .send({name: '', email: 'some@email.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(403);
           res.text.should.equal('{"error":"All fields are required"}');
@@ -51,7 +51,7 @@ describe('# with REST enabled', function() {
     it('should return an error when username contains non-url-safe chars (REST)', function(done) {
       request(_app_one)
         .post('/rest/signup')
-        .send({username: 'name@', email: 'some@email.com', password: 'secret'})
+        .send({name: 'name@', email: 'some@email.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(403);
           res.text.should.equal('{"error":"Username may not contain any non-url-safe characters"}');
@@ -62,7 +62,7 @@ describe('# with REST enabled', function() {
     it('should return an error when email has invalid format (REST)', function(done) {
       request(_app_one)
         .post('/rest/signup')
-        .send({username: 'some', email: 'someemail.com', password: 'secret'})
+        .send({name: 'some', email: 'someemail.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(403);
           res.text.should.equal('{"error":"Email is invalid"}');
@@ -73,7 +73,7 @@ describe('# with REST enabled', function() {
     it('should render a success message when everything went fine (REST)', function(done) {
       request(_app_one)
         .post('/rest/signup')
-        .send({username: 'steve', email: 'steve@wayne.com', password: 'secret'})
+        .send({name: 'steve', email: 'steve@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(204);
           done();
@@ -83,7 +83,7 @@ describe('# with REST enabled', function() {
     it('should return an error message username is already taken (REST)', function(done) {
       request(_app_one)
         .post('/rest/signup')
-        .send({username: 'steve', email: 'steve@wayne.com', password: 'secret'})
+        .send({name: 'steve', email: 'steve@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(403);
           res.text.should.equal('{"error":"Username already taken"}');
@@ -94,7 +94,7 @@ describe('# with REST enabled', function() {
     it('should render a success message when duplicate email was found (REST)', function(done) {
       request(_app_one)
         .post('/rest/signup')
-        .send({username: 'jeff', email: 'steve@wayne.com', password: 'secret'})
+        .send({name: 'jeff', email: 'steve@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(204);
           done();
@@ -119,11 +119,11 @@ describe('# with REST enabled', function() {
       // first sign up a new user -> beep
       request(_app_one)
         .post('/rest/signup')
-        .send({username: 'beep', email: 'beep@wayne.com', password: 'secret'})
+        .send({name: 'beep', email: 'beep@wayne.com', password: 'secret'})
         .end(function(err, res) {
 
           // second get beep's signup token
-          adapter.find('username', 'beep', function(err, user) {
+          adapter.find('name', 'beep', function(err, user) {
 
             // third call url with token
             request(_app_one)
@@ -144,11 +144,11 @@ describe('# with REST enabled', function() {
 
       request(_app_two)
         .post('/rest/signup')
-        .send({username: 'steward', email: 'steward@wayne.com', password: 'secret'})
+        .send({name: 'steward', email: 'steward@wayne.com', password: 'secret'})
         .end(function(error, res) {
 
           // get token for our test user 'steward'
-          adapter.find('username', 'steward', function(err, user) {
+          adapter.find('name', 'steward', function(err, user) {
 
             // request url with token
             request(_app_one)

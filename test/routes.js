@@ -39,7 +39,7 @@ describe('# custom routes', function() {
     it('should use the route provided', function(done) {
       request(_app)
         .post('/signmeup')
-        .send({username: '', email: 'some@email.com', password: 'secret'})
+        .send({name: '', email: 'some@email.com', password: 'secret'})
         .end(function(error, res) {
           // we get an error but not 404
           res.statusCode.should.equal(403);
@@ -52,7 +52,7 @@ describe('# custom routes', function() {
   describe('GET /signup/:token', function() {
 
     it('should render a success message when token is valid', function(done) {
-      adapter.find('username', 'route', function(err, user) {
+      adapter.find('name', 'route', function(err, user) {
         request(_app)
           .get('/signmeup/' + user.signupToken)
           .end(function(error, res) {

@@ -31,7 +31,7 @@ describe('# default config', function() {
     it('should return an error when one input is blank', function(done) {
       request(_app)
         .post('/signup')
-        .send({username: '', email: 'john@wayne.com', password: 'secret'})
+        .send({name: '', email: 'john@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(403);
           res.text.should.include('All fields are required');
@@ -42,7 +42,7 @@ describe('# default config', function() {
     it('should return an error when username contains non-url-safe chars', function(done) {
       request(_app)
         .post('/signup')
-        .send({username: 'john@', email: 'john@wayne.com', password: 'secret'})
+        .send({name: 'john@', email: 'john@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(403);
           res.text.should.include('Username may not contain any non-url-safe characters');
@@ -53,7 +53,7 @@ describe('# default config', function() {
     it('should return an error when email has invalid format', function(done) {
       request(_app)
         .post('/signup')
-        .send({username: 'john', email: 'johnwayne.com', password: 'secret'})
+        .send({name: 'john', email: 'johnwayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(403);
           res.text.should.include('Email is invalid');
@@ -64,7 +64,7 @@ describe('# default config', function() {
     it('should render a success message when everything went fine', function(done) {
       request(_app)
         .post('/signup')
-        .send({username: 'john', email: 'john@wayne.com', password: 'secret'})
+        .send({name: 'john', email: 'john@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(200);
           res.text.should.include('<title>Sign up - Email sent</title>');
@@ -76,7 +76,7 @@ describe('# default config', function() {
     it('should return an error message username is already taken', function(done) {
       request(_app)
         .post('/signup')
-        .send({username: 'john', email: 'john@wayne.com', password: 'secret'})
+        .send({name: 'john', email: 'john@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(403);
           res.text.should.include('<title>Sign up</title>');
@@ -88,7 +88,7 @@ describe('# default config', function() {
     it('should render a success message when duplicate email was found', function(done) {
       request(_app)
         .post('/signup')
-        .send({username: 'jeff', email: 'john@wayne.com', password: 'secret'})
+        .send({name: 'jeff', email: 'john@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(200);
           res.text.should.include('<title>Sign up - Email sent</title>');
@@ -113,7 +113,7 @@ describe('# default config', function() {
 
     it('should render a success message when token is valid', function(done) {
       // get token for our test user 'john'
-      adapter.find('username', 'john', function(err, user) {
+      adapter.find('name', 'john', function(err, user) {
         if (err) console.log(err);
         // request url with token
         request(_app)
