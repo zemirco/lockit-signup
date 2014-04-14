@@ -50,6 +50,28 @@ describe('# default config', function() {
         });
     });
 
+    it('should return an error when username contains uppercase chars', function(done) {
+      request(_app)
+        .post('/signup')
+        .send({name: 'jOhn', email: 'john@wayne.com', password: 'secret'})
+        .end(function(error, res) {
+          res.statusCode.should.equal(403);
+          res.text.should.include('Username must be lowercase');
+          done();
+        });
+    });
+
+    it('should return an error when username doesn\'t start [a-z]', function(done) {
+      request(_app)
+        .post('/signup')
+        .send({name: '.john', email: 'john@wayne.com', password: 'secret'})
+        .end(function(error, res) {
+          res.statusCode.should.equal(403);
+          res.text.should.include('Username has to start with a lowercase letter (a-z)');
+          done();
+        });
+    });
+
     it('should return an error when email has invalid format', function(done) {
       request(_app)
         .post('/signup')
