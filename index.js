@@ -77,6 +77,10 @@ var Signup = module.exports = function(app, config, adapter) {
       error = 'All fields are required';
     } else if (name !== encodeURIComponent(name)) {
       error = 'Username may not contain any non-url-safe characters';
+    } else if (name !== name.toLowerCase()) {
+      error = 'Username must be lowercase';
+    } else if (!name.charAt(0).match(/[a-z]/)) {
+      error = 'Username has to start with a lowercase letter (a-z)';
     } else if (!email.match(EMAIL_REGEXP)) {
       error = 'Email is invalid';
     }
