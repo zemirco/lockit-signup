@@ -6,26 +6,30 @@ var superagent = require('superagent');
 var should = require('should');
 var uuid = require('node-uuid');
 var utls = require('lockit-utils');
-
-var config = require('./app/config.js');
-var Signup = require('../');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var cookieSession = require('cookie-session');
+var config = require('./config.js');
+var Signup = require('../../');
 
 var app = express();
 app.locals.basedir = __dirname + '/app/views';
 app.set('port', 6501);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
-app.use(express.urlencoded());
-app.use(express.json());
-app.use(express.cookieParser('your secret here'));
-app.use(express.cookieSession());
-app.use(app.router);
+app.use(bodyParser.urlencoded());
+app.use(bodyParser.json());
+app.use(cookieParser());
+app.use(cookieSession({
+  secret: 'this is my super secret string'
+}));
 app.use(express.static(path.join(__dirname, 'public')));
-http.createServer(app).listen(app.get('port'));
-
 var db = utls.getDatabase(config);
 var adapter = require(db.adapter)(config);
-var signup = new Signup(app, config, adapter);
+var signup = new Signup(config, adapter);
+app.use(signup.router);
+http.createServer(app).listen(app.get('port'));
+
 
 // create second app that manually handles responses
 var config_two = JSON.parse(JSON.stringify(config));
@@ -35,14 +39,16 @@ app_two.locals.basedir = __dirname + '/app/views';
 app_two.set('port', 6502);
 app_two.set('views', __dirname + '/views');
 app_two.set('view engine', 'jade');
-app_two.use(express.urlencoded());
-app_two.use(express.json());
-app_two.use(express.cookieParser('your secret here'));
-app_two.use(express.cookieSession());
-app_two.use(app_two.router);
+app_two.use(bodyParser.urlencoded());
+app_two.use(bodyParser.json());
+app_two.use(cookieParser());
+app_two.use(cookieSession({
+  secret: 'this is my super secret string'
+}));
 app_two.use(express.static(path.join(__dirname, 'public')));
+var signup_two = new Signup(config_two, adapter);
+app_two.use(signup_two.router);
 http.createServer(app_two).listen(app_two.get('port'));
-var signup_two = new Signup(app_two, config_two, adapter);
 
 describe('# event listeners', function() {
 
