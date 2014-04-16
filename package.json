@@ -26,7 +26,8 @@
     "node-uuid": "~1.4.1",
     "ms": "~0.6.2",
     "moment": "~2.5.0",
-    "lockit-sendmail": "0.1.2"
+    "lockit-sendmail": "0.1.2",
+    "express": "^4.0.0"
   },
   "devDependencies": {
     "lockit-couchdb-adapter": "0.4.0",
@@ -35,7 +36,6 @@
     "grunt": "~0.4.2",
     "grunt-mocha-test": "~0.8.1",
     "jade": "~1.0.0",
-    "express": "~3.4.7",
     "grunt-contrib-jshint": "~0.8.0",
     "nano": "~4.2.1",
     "lockit-utils": "0.2.0",
