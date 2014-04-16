@@ -10,8 +10,6 @@
   var Signup = require('lockit-signup');
 
   var signup = new Signup(app, config, adapter);
-  // or simply
-  // Signup(app, config, adapter);
   ```
 
   **New**
