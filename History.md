@@ -15,7 +15,7 @@
   **New**
 
   ```js
-  var Signup = require('lockit-login');
+  var Signup = require('lockit-signup');
 
   var signup = new Signup(config, adapter);
   app.use(signup.router);
