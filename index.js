@@ -1,12 +1,11 @@
 
 var path = require('path');
+var events = require('events');
+var util = require('util');
+var express = require('express');
 var uuid = require('node-uuid');
 var ms = require('ms');
 var moment = require('moment');
-
-// require event emitter
-var events = require('events');
-var util = require('util');
 
 /**
  * Internal helper functions
@@ -20,15 +19,21 @@ function join(view) {
  * Let's get serious
  */
 
-var Signup = module.exports = function(app, config, adapter) {
+var Signup = module.exports = function(config, adapter) {
 
-  if (!(this instanceof Signup)) return new Signup(app, config, adapter);
+  if (!(this instanceof Signup)) return new Signup(config, adapter);
 
   var Mail = require('lockit-sendmail')(config);
+
+  // call super constructor function
+  events.EventEmitter.call(this);
+
   var that = this;
+
+  // shorten config
   var cfg = config.signup;
 
-  // set up the default route
+  // set default route
   var route = cfg.route || '/signup';
 
   // change URLs if REST is active
@@ -38,11 +43,13 @@ var Signup = module.exports = function(app, config, adapter) {
    * Routes
    */
 
-  app.get(route, getSignup);
-  app.post(route, postSignup);
-  app.get(route + '/resend-verification', getSignupResend);
-  app.post(route + '/resend-verification', postSignupResend);
-  app.get(route + '/:token', getSignupToken);
+  var router = express.Router();
+  router.get(route, getSignup);
+  router.post(route, postSignup);
+  router.get(route + '/resend-verification', getSignupResend);
+  router.post(route + '/resend-verification', postSignupResend);
+  router.get(route + '/:token', getSignupToken);
+  this.router = router;
 
   /**
    * Route handlers
@@ -57,12 +64,13 @@ var Signup = module.exports = function(app, config, adapter) {
     var view = cfg.views.signup || join('get-signup');
 
     res.render(view, {
-      title: 'Sign up'
+      title: 'Sign up',
+      basedir: req.app.get('views')
     });
   }
 
   // POST /signup
-  function postSignup(req, response) {
+  function postSignup(req, response, next) {
 
     var name = req.body.name;
     var email = req.body.email;
@@ -96,14 +104,15 @@ var Signup = module.exports = function(app, config, adapter) {
       response.status(403);
       response.render(errorView, {
         title: 'Sign up',
-        error: error
+        error: error,
+        basedir: req.app.get('views')
       });
       return;
     }
 
     // check for duplicate name
     adapter.find('name', name, function(err, user) {
-      if (err) console.log(err);
+      if (err) return next(err);
 
       if (user) {
         error = 'Username already taken';
@@ -114,14 +123,15 @@ var Signup = module.exports = function(app, config, adapter) {
         response.status(403);
         response.render(errorView, {
           title: 'Sign up',
-          error: error
+          error: error,
+          basedir: req.app.get('views')
         });
         return;
       }
 
       // check for duplicate email - send reminder when duplicate email is found
       adapter.find('email', email, function(err, user) {
-        if (err) console.log(err);
+        if (err) return next(err);
 
         // custom or built-in view
         var successView = cfg.views.signedUp || join('post-signup');
@@ -130,13 +140,14 @@ var Signup = module.exports = function(app, config, adapter) {
           // send already registered email
           var mail = new Mail('emailSignupTaken');
           mail.send(user.name, user.email, function(err, res) {
-            if (err) console.log(err);
+            if (err) return next(err);
 
             // send only JSON when REST is active
             if (config.rest) return response.send(204);
 
             response.render(successView, {
-              title: 'Sign up - Email sent'
+              title: 'Sign up - Email sent',
+              basedir: req.app.get('views')
             });
           });
 
@@ -147,12 +158,12 @@ var Signup = module.exports = function(app, config, adapter) {
 
         // save new user to db
         adapter.save(name, email, password, function(err, user) {
-          if (err) console.log(err);
+          if (err) return next(err);
 
           // send email with link for address verification
           var mail = new Mail('emailSignup');
           mail.send(user.name, user.email, user.signupToken, function(err, res) {
-            if (err) console.log(err);
+            if (err) return next(err);
 
             // emit event
             that.emit('signup::post', user);
@@ -161,7 +172,8 @@ var Signup = module.exports = function(app, config, adapter) {
             if (config.rest) return response.send(204);
 
             response.render(successView, {
-              title: 'Sign up - Email sent'
+              title: 'Sign up - Email sent',
+              basedir: req.app.get('views')
             });
           });
 
@@ -181,12 +193,13 @@ var Signup = module.exports = function(app, config, adapter) {
     var view = cfg.views.resend || join('resend-verification');
 
     res.render(view, {
-      title: 'Resend verification email'
+      title: 'Resend verification email',
+      basedir: req.app.get('views')
     });
   }
 
   // POST /signup/resend-verification
-  function postSignupResend(req, response) {
+  function postSignupResend(req, response, next) {
     var email = req.body.email;
 
     var error = null;
@@ -208,14 +221,15 @@ var Signup = module.exports = function(app, config, adapter) {
       response.status(403);
       response.render(errorView, {
         title: 'Resend verification email',
-        error: error
+        error: error,
+        basedir: req.app.get('views')
       });
       return;
     }
 
     // check for user with given email address
     adapter.find('email', email, function(err, user) {
-      if (err) console.log(err);
+      if (err) return next(err);
 
       // custom or built-in view
       var successView = cfg.views.signedUp || join('post-signup');
@@ -227,7 +241,8 @@ var Signup = module.exports = function(app, config, adapter) {
         if (config.rest) return response.send(204);
 
         response.render(successView, {
-          title: 'Sign up - Email sent'
+          title: 'Sign up - Email sent',
+          basedir: req.app.get('views')
         });
         return;
       }
@@ -246,18 +261,19 @@ var Signup = module.exports = function(app, config, adapter) {
 
       // save updated user to db
       adapter.update(user, function(err, res) {
-        if (err) console.log(err);
+        if (err) return next(err);
 
         // send sign up email
         var mail = new Mail('emailResendVerification');
         mail.send(user.name, email, token, function(err, res) {
-          if (err) console.log(err);
+          if (err) return next(err);
 
           // send only JSON when REST is active
           if (config.rest) return response.send(204);
 
           response.render(successView, {
-            title: 'Sign up - Email sent'
+            title: 'Sign up - Email sent',
+            basedir: req.app.get('views')
           });
         });
 
@@ -279,7 +295,7 @@ var Signup = module.exports = function(app, config, adapter) {
 
     // find user by token
     adapter.find('signupToken', token, function(err, user) {
-      if (err) console.log(err);
+      if (err) return next(err);
 
       // no user found -> forward to error handling middleware
       if (!user) return next();
@@ -292,7 +308,7 @@ var Signup = module.exports = function(app, config, adapter) {
 
         // save updated user to db
         adapter.update(user, function(err, res) {
-          if (err) console.log(err);
+          if (err) return next(err);
 
           // send only JSON when REST is active
           if (config.rest) return response.json(403, {error: 'token expired'});
@@ -302,7 +318,8 @@ var Signup = module.exports = function(app, config, adapter) {
 
           // render template to allow resending verification email
           response.render(expiredView, {
-            title: 'Sign up - Email verification link expired'
+            title: 'Sign up - Email verification link expired',
+            basedir: req.app.get('views')
           });
 
         });
@@ -322,7 +339,7 @@ var Signup = module.exports = function(app, config, adapter) {
 
       // save user with updated values to db
       adapter.update(user, function(err, user) {
-        if (err) console.log(err);
+        if (err) return next(err);
 
         // emit 'signup' event
         that.emit('signup', user, response);
@@ -337,7 +354,8 @@ var Signup = module.exports = function(app, config, adapter) {
 
           // render email verification success view
           response.render(view, {
-            title: 'Sign up success'
+            title: 'Sign up success',
+            basedir: req.app.get('views')
           });
 
         }
@@ -346,8 +364,6 @@ var Signup = module.exports = function(app, config, adapter) {
 
     });
   }
-
-  events.EventEmitter.call(this);
 
 };
 
