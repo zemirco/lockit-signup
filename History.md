@@ -4,7 +4,7 @@
 - requires Express 4.x
 - makes use of `express.Router()`. No need to pass `app` around as argument.
 
-  **Old**
+  **old**
 
   ```js
   var Signup = require('lockit-signup');
@@ -12,7 +12,7 @@
   var signup = new Signup(app, config, adapter);
   ```
 
-  **New**
+  **new**
 
   ```js
   var Signup = require('lockit-signup');
@@ -23,13 +23,13 @@
 
 - proper Error handling. All Errors are piped to next middleware.
 
-  Old
+  **old**
 
   ```js
   if (err) console.log(err);
   ```
 
-  New
+  **new**
 
   ```js
   if (err) return next(err);
