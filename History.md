@@ -1,5 +1,5 @@
 
-##### 1.0.0 - 2014-??-??
+##### 1.0.0 - 2014-04-19
 
 - requires Express 4.x
 - makes use of `express.Router()`. No need to pass `app` around as argument.
