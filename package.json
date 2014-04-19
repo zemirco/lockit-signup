@@ -1,6 +1,6 @@
 {
   "name": "lockit-signup",
-  "version": "0.7.1",
+  "version": "1.0.0",
   "description": "signup module for lockit",
   "main": "index.js",
   "scripts": {
