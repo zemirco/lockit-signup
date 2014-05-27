@@ -90,7 +90,7 @@ describe('# default config', function() {
         .end(function(error, res) {
           res.statusCode.should.equal(200);
           res.text.should.include('<title>Sign up - Email sent</title>');
-          res.text.should.include('Email with verification link sent. Please check your inbox.');
+          res.text.should.include('Email with verification link sent.');
           done();
         });
     });
@@ -114,7 +114,7 @@ describe('# default config', function() {
         .end(function(error, res) {
           res.statusCode.should.equal(200);
           res.text.should.include('<title>Sign up - Email sent</title>');
-          res.text.should.include('Email with verification link sent. Please check your inbox.');
+          res.text.should.include('Email with verification link sent.');
           done();
         });
     });
@@ -142,7 +142,7 @@ describe('# default config', function() {
           .get('/signup/' + user.signupToken)
           .end(function(error, res) {
             res.statusCode.should.equal(200);
-            res.text.should.include('Sign up successfully completed');
+            res.text.should.include('You can now use your credentials');
             done();
           });
       });
@@ -157,7 +157,7 @@ describe('# default config', function() {
         .get('/signup/resend-verification')
         .end(function(error, res) {
           res.statusCode.should.equal(200);
-          res.text.should.include('To activate your account you must first confirm your email address');
+          res.text.should.include('Resend confirmation email');
           res.text.should.include('<title>Resend verification email</title>');
           done();
         });

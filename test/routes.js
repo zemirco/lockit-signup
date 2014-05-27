@@ -57,7 +57,7 @@ describe('# custom routes', function() {
           .get('/signmeup/' + user.signupToken)
           .end(function(error, res) {
             res.statusCode.should.equal(200);
-            res.text.should.include('Sign up successfully completed');
+            res.text.should.include('You can now use your credentials');
             done();
           });
       });
@@ -72,7 +72,7 @@ describe('# custom routes', function() {
         .get('/signmeup/resend-verification')
         .end(function(error, res) {
           res.statusCode.should.equal(200);
-          res.text.should.include('To activate your account you must first confirm your email address');
+          res.text.should.include('Resend confirmation email');
           done();
         });
     });
