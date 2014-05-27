@@ -1,8 +1,10 @@
 # Lockit signup
 
-[![Build Status](https://travis-ci.org/zeMirco/lockit-signup.svg?branch=master)](https://travis-ci.org/zeMirco/lockit-signup) [![NPM version](https://badge.fury.io/js/lockit-signup.svg)](http://badge.fury.io/js/lockit-signup)
+[![Build Status](https://travis-ci.org/zemirco/lockit-signup.svg?branch=master)](https://travis-ci.org/zemirco/lockit-signup)
+[![NPM version](https://badge.fury.io/js/lockit-signup.svg)](http://badge.fury.io/js/lockit-signup)
+[![Dependency Status](https://david-dm.org/zemirco/lockit-signup.svg)](https://david-dm.org/zemirco/lockit-signup)
 
-Sign up users to your Express app. The module is part of [Lockit](https://github.com/zeMirco/lockit).
+Sign up users to your Express app. The module is part of [Lockit](https://github.com/zemirco/lockit).
 
 ## Installation
 
@@ -35,7 +37,7 @@ app.use(signup.router);
 
 ## Configuration
 
-More about configuration at [lockit](https://github.com/zeMirco/lockit).
+More about configuration at [lockit](https://github.com/zemirco/lockit).
 
 ## Features
 
