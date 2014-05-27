@@ -1,4 +1,12 @@
 
+##### 1.1.0 - 2014-05-27
+
+- improve views by using Bootstrap conditional classes
+- set `autocomplete="off"` for forms
+- refactor code
+- use updated `lockit-sendmail` module
+- update dependencies
+
 ##### 1.0.0 - 2014-04-19
 
 - requires Express 4.x
