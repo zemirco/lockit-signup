@@ -1,20 +1,24 @@
 extend /layout
 
 block content
-  div.panel.panel-default
-    div.panel-heading Signup
-    div.panel-body
-      form(action="/signup", method="POST")
-        input(type="hidden", name="_csrf", value=_csrf)
-        div.form-group
-          label(for="name") Username
-          input.form-control(type="text", id="name", name="name", placeholder="Pick a username")
-        div.form-group
-          label(for="email") Email
-          input.form-control(type="email", id="email", name="email", placeholder="Your email")
-        div.form-group
-          label(for="password") Password
-          input.form-control(type="password", id="password", name="password", placeholder="Create a password")
-        if error
-          div.alert.alert-warning #{error}
-        input(type="submit", class="btn btn-primary", value="Signup")
+  div.row
+    div.col-md-4.col-md-offset-4.col-sm-6.col-sm-offset-3
+      div.panel.panel-default
+        div.panel-heading Signup
+        div.panel-body
+          form(action="/signup", method="POST", autocomplete="off")
+            input(type="hidden", name="_csrf", value=_csrf)
+            div.form-group
+              label(for="name") Username
+              input.form-control(type="text", id="name", name="name", placeholder="Pick a username")
+            div.form-group
+              label(for="email") Email
+              input.form-control(type="email", id="email", name="email", placeholder="Your email")
+            div.form-group
+              label(for="password") Password
+              input.form-control(type="password", id="password", name="password", placeholder="Create a password")
+            if error
+              div.alert.alert-warning #{error}
+            input(type="submit", class="btn btn-primary btn-block", value="Signup")
+          div.text-center(style="margin-top: 15px;")
+            small: a(href="/signup/resend-verification") Resend email
