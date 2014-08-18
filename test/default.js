@@ -18,8 +18,8 @@ describe('# default config', function() {
         .get('/signup')
         .end(function(err, res) {
           res.statusCode.should.equal(200);
-          res.text.should.include('Signup');
-          res.text.should.include('<title>Sign up</title>');
+          res.text.should.containEql('Signup');
+          res.text.should.containEql('<title>Sign up</title>');
           done();
         });
     });
@@ -34,7 +34,7 @@ describe('# default config', function() {
         .send({name: '', email: 'john@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(403);
-          res.text.should.include('All fields are required');
+          res.text.should.containEql('All fields are required');
           done();
         });
     });
@@ -45,7 +45,7 @@ describe('# default config', function() {
         .send({name: 'john@', email: 'john@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(403);
-          res.text.should.include('Username may not contain any non-url-safe characters');
+          res.text.should.containEql('Username may not contain any non-url-safe characters');
           done();
         });
     });
@@ -56,7 +56,7 @@ describe('# default config', function() {
         .send({name: 'jOhn', email: 'john@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(403);
-          res.text.should.include('Username must be lowercase');
+          res.text.should.containEql('Username must be lowercase');
           done();
         });
     });
@@ -67,7 +67,7 @@ describe('# default config', function() {
         .send({name: '.john', email: 'john@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(403);
-          res.text.should.include('Username has to start with a lowercase letter (a-z)');
+          res.text.should.containEql('Username has to start with a lowercase letter (a-z)');
           done();
         });
     });
@@ -78,7 +78,7 @@ describe('# default config', function() {
         .send({name: 'john', email: 'johnwayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(403);
-          res.text.should.include('Email is invalid');
+          res.text.should.containEql('Email is invalid');
           done();
         });
     });
@@ -89,8 +89,8 @@ describe('# default config', function() {
         .send({name: 'john', email: 'john@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(200);
-          res.text.should.include('<title>Sign up - Email sent</title>');
-          res.text.should.include('Email with verification link sent.');
+          res.text.should.containEql('<title>Sign up - Email sent</title>');
+          res.text.should.containEql('Email with verification link sent.');
           done();
         });
     });
@@ -101,8 +101,8 @@ describe('# default config', function() {
         .send({name: 'john', email: 'john@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(403);
-          res.text.should.include('<title>Sign up</title>');
-          res.text.should.include('Username already taken');
+          res.text.should.containEql('<title>Sign up</title>');
+          res.text.should.containEql('Username already taken');
           done();
         });
     });
@@ -113,8 +113,8 @@ describe('# default config', function() {
         .send({name: 'jeff', email: 'john@wayne.com', password: 'secret'})
         .end(function(error, res) {
           res.statusCode.should.equal(200);
-          res.text.should.include('<title>Sign up - Email sent</title>');
-          res.text.should.include('Email with verification link sent.');
+          res.text.should.containEql('<title>Sign up - Email sent</title>');
+          res.text.should.containEql('Email with verification link sent.');
           done();
         });
     });
@@ -128,7 +128,7 @@ describe('# default config', function() {
         .get('/signup/id123')
         .end(function(error, res) {
           res.statusCode.should.equal(404);
-          res.text.should.include('Cannot GET /signup/id123');
+          res.text.should.containEql('Cannot GET /signup/id123');
           done();
         });
     });
@@ -142,7 +142,7 @@ describe('# default config', function() {
           .get('/signup/' + user.signupToken)
           .end(function(error, res) {
             res.statusCode.should.equal(200);
-            res.text.should.include('You can now use your credentials');
+            res.text.should.containEql('You can now use your credentials');
             done();
           });
       });
@@ -157,8 +157,8 @@ describe('# default config', function() {
         .get('/signup/resend-verification')
         .end(function(error, res) {
           res.statusCode.should.equal(200);
-          res.text.should.include('Resend confirmation email');
-          res.text.should.include('<title>Resend verification email</title>');
+          res.text.should.containEql('Resend confirmation email');
+          res.text.should.containEql('<title>Resend verification email</title>');
           done();
         });
     });
@@ -173,7 +173,7 @@ describe('# default config', function() {
         .send({email: 'johnwayne.com'})
         .end(function(error, res) {
           res.statusCode.should.equal(403);
-          res.text.should.include('Email is invalid');
+          res.text.should.containEql('Email is invalid');
           done();
         });
     });
@@ -184,7 +184,7 @@ describe('# default config', function() {
         .send({email: 'jim@wayne.com'})
         .end(function(error, res) {
           res.statusCode.should.equal(200);
-          res.text.should.include('Email with verification link sent');
+          res.text.should.containEql('Email with verification link sent');
           done();
         });
     });
@@ -195,7 +195,7 @@ describe('# default config', function() {
         .send({email: 'john@wayne.com'})
         .end(function(error, res) {
           res.statusCode.should.equal(200);
-          res.text.should.include('Email with verification link sent');
+          res.text.should.containEql('Email with verification link sent');
           done();
         });
     });
@@ -208,7 +208,7 @@ describe('# default config', function() {
           .send({email: 'marc@email.com'})
           .end(function(error, res) {
             res.statusCode.should.equal(200);
-            res.text.should.include('Email with verification link sent');
+            res.text.should.containEql('Email with verification link sent');
             done();
           });
       });

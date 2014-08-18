@@ -73,7 +73,7 @@ describe('# event listeners', function() {
       agent
         .get('http://localhost:6502/signup/' + token_two)
         .end(function(err, res) {
-          res.text.should.include('awesome');
+          res.text.should.containEql('awesome');
           done();
         });
     });

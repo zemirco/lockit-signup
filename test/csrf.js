@@ -24,7 +24,7 @@ describe('# with csrf', function() {
           .end(function(err, res) {
             var cookies = cookie.parse(res.headers['set-cookie'][0]);
             var token = cookies.csrf;
-            res.text.should.include('name="_csrf" value="' + token + '"');
+            res.text.should.containEql('name="_csrf" value="' + token + '"');
             done();
           });
     });
@@ -37,7 +37,7 @@ describe('# with csrf', function() {
           .end(function(err, res) {
             var cookies = cookie.parse(res.headers['set-cookie'][0]);
             var token = cookies.csrf;
-            res.text.should.include('name="_csrf" value="' + token + '"');
+            res.text.should.containEql('name="_csrf" value="' + token + '"');
             done();
           });
     });
@@ -56,7 +56,7 @@ describe('# with csrf', function() {
               .end(function(err, res) {
                 var cookies = cookie.parse(res.headers['set-cookie'][0]);
                 var token = cookies.csrf;
-                res.text.should.include('name="_csrf" value="' + token + '"');
+                res.text.should.containEql('name="_csrf" value="' + token + '"');
                 done();
               });
         });

@@ -27,7 +27,7 @@ describe('# custom routes', function() {
         .get('/signmeup')
         .end(function(error, res) {
           res.statusCode.should.equal(200);
-          res.text.should.include('<div class="panel-heading">Signup</div>');
+          res.text.should.containEql('<div class="panel-heading">Signup</div>');
           done();
         });
     });
@@ -57,7 +57,7 @@ describe('# custom routes', function() {
           .get('/signmeup/' + user.signupToken)
           .end(function(error, res) {
             res.statusCode.should.equal(200);
-            res.text.should.include('You can now use your credentials');
+            res.text.should.containEql('You can now use your credentials');
             done();
           });
       });
@@ -72,7 +72,7 @@ describe('# custom routes', function() {
         .get('/signmeup/resend-verification')
         .end(function(error, res) {
           res.statusCode.should.equal(200);
-          res.text.should.include('Resend confirmation email');
+          res.text.should.containEql('Resend confirmation email');
           done();
         });
     });

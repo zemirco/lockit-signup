@@ -41,7 +41,7 @@ describe('# custom views', function() {
         .get('/signup')
         .end(function(error, res) {
           res.statusCode.should.equal(200);
-          res.text.should.include('<p>This is my custom view.</p>');
+          res.text.should.containEql('<p>This is my custom view.</p>');
           done();
         });
     });
@@ -56,7 +56,7 @@ describe('# custom views', function() {
         .post('/signup')
         .send({name: 'jeff', email: 'jeff@wayne.com', password: 'secret'})
         .end(function(error, res) {
-          res.text.should.include('<p>Yes you did it!</p>');
+          res.text.should.containEql('<p>Yes you did it!</p>');
           done();
         });
     });
@@ -83,7 +83,7 @@ describe('# custom views', function() {
               .get('/signup/' + user.signupToken)
               .end(function(error, res) {
                 res.statusCode.should.equal(200);
-                res.text.should.include('Nope, not valid anymore!');
+                res.text.should.containEql('Nope, not valid anymore!');
                 done();
               });
 
@@ -110,7 +110,7 @@ describe('# custom views', function() {
             request(_app_two)
               .get('/signup/' + user.signupToken)
               .end(function(error, res) {
-                res.text.should.include('You are awesome!');
+                res.text.should.containEql('You are awesome!');
                 done();
               });
 
@@ -128,7 +128,7 @@ describe('# custom views', function() {
       request(_app_one)
         .get('/signup/resend-verification')
         .end(function(error, res) {
-          res.text.should.include('Did not get it');
+          res.text.should.containEql('Did not get it');
           done();
         });
     });
