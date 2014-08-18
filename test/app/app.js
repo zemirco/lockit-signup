@@ -28,7 +28,7 @@ function start(config) {
   app.locals.basedir = __dirname + '/views';
 
   // all environments
-  app.set('port', process.env.PORT || 3000);
+  app.set('port', process.env.PORT || config.port || 3000);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   // make JSON output simpler for testing
@@ -60,6 +60,10 @@ function start(config) {
   var db = lockitUtils.getDatabase(config);
   var adapter = require(db.adapter)(config);
   var signup = new Signup(config, adapter);
+
+  // expose login and adapter for testing
+  app._signup = signup;
+  app._adapter = adapter;
 
   app.use(signup.router);
 
