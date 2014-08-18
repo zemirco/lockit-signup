@@ -1,4 +1,9 @@
 
+##### 1.1.1 / 2014-08-18
+
+- keep username and email field values on failed signup request
+- update dependencies
+
 ##### 1.1.0 / 2014-05-27
 
 - improve views by using Bootstrap conditional classes
