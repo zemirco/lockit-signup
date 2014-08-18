@@ -10,10 +10,10 @@ block content
             input(type="hidden", name="_csrf", value=_csrf)
             div.form-group
               label(for="name") Username
-              input.form-control(type="text", id="name", name="name", placeholder="Pick a username")
+              input.form-control(type="text", id="name", name="name", value=name, placeholder="Pick a username")
             div.form-group
               label(for="email") Email
-              input.form-control(type="email", id="email", name="email", placeholder="Your email")
+              input.form-control(type="email", id="email", name="email", value=email, placeholder="Your email")
             div.form-group
               label(for="password") Password
               input.form-control(type="password", id="password", name="password", placeholder="Create a password")

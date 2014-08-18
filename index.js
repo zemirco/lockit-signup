@@ -116,7 +116,9 @@ Signup.prototype.postSignup = function(req, res, next) {
     res.render(errorView, {
       title: 'Sign up',
       error: error,
-      basedir: req.app.get('views')
+      basedir: req.app.get('views'),
+      name: name,
+      email: email
     });
     return;
   }
@@ -135,7 +137,9 @@ Signup.prototype.postSignup = function(req, res, next) {
       res.render(errorView, {
         title: 'Sign up',
         error: error,
-        basedir: req.app.get('views')
+        basedir: req.app.get('views'),
+        name: name,
+        email: email
       });
       return;
     }
