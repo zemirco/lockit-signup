@@ -22,10 +22,10 @@
   },
   "license": "MIT",
   "dependencies": {
-    "node-uuid": "~1.4.1",
-    "ms": "~0.6.2",
-    "lockit-sendmail": "1.0.0",
-    "moment": "^2.6.0"
+    "node-uuid": "^1.4.1",
+    "ms": "^0.6.2",
+    "lockit-sendmail": "^1.0.0",
+    "moment": "^2.8.1"
   },
   "devDependencies": {
     "express": "^4.3.1",
