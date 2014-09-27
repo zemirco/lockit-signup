@@ -1,4 +1,8 @@
 
+##### 1.2.0 / 2014-09-27
+
+- update dependencies
+
 ##### 1.1.1 / 2014-08-18
 
 - keep username and email field values on failed signup request
