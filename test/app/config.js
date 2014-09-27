@@ -2,7 +2,7 @@ exports.appname = 'Test App';
 exports.url = 'http://localhost:3000';
 
 // email settings
-exports.emailType = 'Stub';
+exports.emailType = 'nodemailer-stub-transport';
 exports.emailSettings = {
   service: 'none',
   auth: {
