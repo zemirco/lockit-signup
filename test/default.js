@@ -88,6 +88,7 @@ describe('# default config', function() {
         .post('/signup')
         .send({name: 'john', email: 'john@wayne.com', password: 'secret'})
         .end(function(error, res) {
+          if (error) {console.log(error); }
           res.statusCode.should.equal(200);
           res.text.should.containEql('<title>Sign up - Email sent</title>');
           res.text.should.containEql('Email with verification link sent.');

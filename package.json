@@ -24,7 +24,7 @@
   "dependencies": {
     "lockit-sendmail": "^1.1.0",
     "moment": "^2.8.3",
-    "ms": "^0.6.2",
+    "ms": "^0.7.1",
     "node-uuid": "^1.4.1"
   },
   "devDependencies": {
@@ -42,11 +42,11 @@
     "lockit-template-blank": "0.0.1",
     "lockit-utils": "^0.5.1",
     "mocha": "^2.2.5",
-    "nano": "^5.11.2",
-    "nodemailer-stub-transport": "^0.1.4",
-    "should": "^4.0.4",
+    "nano": "^6.1.4",
+    "nodemailer-stub-transport": "^1.0.0",
+    "should": "^7.0.1",
     "static-favicon": "^2.0.0-alpha",
-    "superagent": "^0.19.0",
-    "supertest": "^0.13.0"
+    "superagent": "^1.2.0",
+    "supertest": "^1.0.1"
   }
 }
