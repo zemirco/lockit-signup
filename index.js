@@ -1,3 +1,4 @@
+'use strict';
 
 var path = require('path');
 var events = require('events');
@@ -27,16 +28,16 @@ function join(view) {
  * @param {Object} adapter
  */
 var Signup = module.exports = function(config, adapter) {
-  if (!(this instanceof Signup)) return new Signup(config, adapter);
+  if (!(this instanceof Signup)) {return new Signup(config, adapter); }
   events.EventEmitter.call(this);
 
   this.config = config;
   this.adapter = adapter;
 
   var route = config.signup.route || '/signup';
-  if (config.rest) route = '/rest' + route;
+  if (config.rest) {route = '/rest' + route; }
 
-  var router = express.Router();
+  var router = new express.Router();
   router.get(route, this.getSignup.bind(this));
   router.post(route, this.postSignup.bind(this));
   router.get(route + '/resend-verification', this.getSignupResend.bind(this));
@@ -58,7 +59,7 @@ util.inherits(Signup, events.EventEmitter);
  */
 Signup.prototype.getSignup = function(req, res, next) {
   // do not handle the route when REST is active
-  if (this.config.rest) return next();
+  if (this.config.rest) {return next(); }
 
   // custom or built-in view
   var view = this.config.signup.views.signup || join('get-signup');
@@ -109,56 +110,54 @@ Signup.prototype.postSignup = function(req, res, next) {
 
   if (error) {
     // send only JSON when REST is active
-    if (config.rest) return res.json(403, {error: error});
+    if (config.rest) {return res.json(403, {error: error}); }
 
     // render template with error message
     res.status(403);
-    res.render(errorView, {
+    return res.render(errorView, {
       title: 'Sign up',
       error: error,
       basedir: req.app.get('views'),
       name: name,
       email: email
     });
-    return;
   }
 
   // check for duplicate name
   adapter.find('name', name, function(err, user) {
-    if (err) return next(err);
+    if (err) {return next(err); }
 
     if (user) {
       error = 'Username already taken';
       // send only JSON when REST is active
-      if (config.rest) return res.json(403, {error: error});
+      if (config.rest) {return res.json(403, {error: error}); }
 
       // render template with error message
       res.status(403);
-      res.render(errorView, {
+      return res.render(errorView, {
         title: 'Sign up',
         error: error,
         basedir: req.app.get('views'),
         name: name,
         email: email
       });
-      return;
     }
 
     // check for duplicate email - send reminder when duplicate email is found
-    adapter.find('email', email, function(err, user) {
-      if (err) return next(err);
+    adapter.find('email', email, function(findErr, foundUser) {
+      if (findErr) {return next(findErr); }
 
       // custom or built-in view
       var successView = config.signup.views.signedUp || join('post-signup');
 
-      if (user) {
+      if (foundUser) {
         // send already registered email
         var mail = new Mail(config);
-        mail.taken(user.name, user.email, function(err, result) {
-          if (err) return next(err);
+        return mail.taken(foundUser.name, foundUser.email, function(takenErr) {
+          if (takenErr) {return next(takenErr); }
 
           // send only JSON when REST is active
-          if (config.rest) return res.send(204);
+          if (config.rest) {return res.send(204); }
 
           res.render(successView, {
             title: 'Sign up - Email sent',
@@ -166,25 +165,24 @@ Signup.prototype.postSignup = function(req, res, next) {
           });
         });
 
-        return;
       }
 
       // looks like everything is fine
 
       // save new user to db
-      adapter.save(name, email, password, function(err, user) {
-        if (err) return next(err);
+      adapter.save(name, email, password, function(saveErr, savedUser) {
+        if (saveErr) {return next(saveErr); }
 
         // send email with link for address verification
-        var mail = new Mail(config);
-        mail.signup(user.name, user.email, user.signupToken, function(err, result) {
-          if (err) return next(err);
+        var m = new Mail(config);
+        m.signup(savedUser.name, savedUser.email, savedUser.signupToken, function(signupErr) {
+          if (signupErr) {return next(signupErr); }
 
           // emit event
-          that.emit('signup::post', user);
+          that.emit('signup::post', savedUser);
 
           // send only JSON when REST is active
-          if (config.rest) return res.send(204);
+          if (config.rest) {return res.send(204); }
 
           res.render(successView, {
             title: 'Sign up - Email sent',
@@ -210,7 +208,7 @@ Signup.prototype.postSignup = function(req, res, next) {
  */
 Signup.prototype.getSignupResend = function(req, res, next) {
   // do not handle the route when REST is active
-  if (this.config.rest) return next();
+  if (this.config.rest) {return next(); }
 
   // custom or built-in view
   var view = this.config.signup.views.resend || join('resend-verification');
@@ -246,24 +244,23 @@ Signup.prototype.postSignupResend = function(req, res, next) {
 
   if (error) {
     // send only JSON when REST is active
-    if (config.rest) return res.json(403, {error: error});
+    if (config.rest) {return res.json(403, {error: error}); }
 
     // custom or built-in view
     var errorView = config.signup.views.resend || join('resend-verification');
 
     // render template with error message
     res.status(403);
-    res.render(errorView, {
+    return res.render(errorView, {
       title: 'Resend verification email',
       error: error,
       basedir: req.app.get('views')
     });
-    return;
   }
 
   // check for user with given email address
   adapter.find('email', email, function(err, user) {
-    if (err) return next(err);
+    if (err) {return next(err); }
 
     // custom or built-in view
     var successView = config.signup.views.signedUp || join('post-signup');
@@ -272,13 +269,12 @@ Signup.prototype.postSignupResend = function(req, res, next) {
     // or email address is already verified -> user has to use password reset function
     if (!user || user.emailVerified) {
       // send only JSON when REST is active
-      if (config.rest) return res.send(204);
+      if (config.rest) {return res.send(204); }
 
-      res.render(successView, {
+      return res.render(successView, {
         title: 'Sign up - Email sent',
         basedir: req.app.get('views')
       });
-      return;
     }
 
     // we have an existing user with provided email address
@@ -294,16 +290,16 @@ Signup.prototype.postSignupResend = function(req, res, next) {
     user.signupTokenExpires = moment().add(timespan, 'ms').toDate();
 
     // save updated user to db
-    adapter.update(user, function(err, user) {
-      if (err) return next(err);
+    adapter.update(user, function(updateErr, updatedUser) {
+      if (updateErr) {return next(updateErr); }
 
       // send sign up email
       var mail = new Mail(config);
-      mail.resend(user.name, email, token, function(err, result) {
-        if (err) return next(err);
+      mail.resend(updatedUser.name, email, token, function(resendErr) {
+        if (resendErr) {return next(resendErr); }
 
         // send only JSON when REST is active
-        if (config.rest) return res.send(204);
+        if (config.rest) {return res.send(204); }
 
         res.render(successView, {
           title: 'Sign up - Email sent',
@@ -339,14 +335,14 @@ Signup.prototype.getSignupToken = function(req, res, next) {
   var re = new RegExp('[0-9a-f]{22}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', 'i');
 
   // if format is wrong no need to query the database
-  if (!re.test(token)) return next();
+  if (!re.test(token)) {return next(); }
 
   // find user by token
   adapter.find('signupToken', token, function(err, user) {
-    if (err) return next(err);
+    if (err) {return next(err); }
 
     // no user found -> forward to error handling middleware
-    if (!user) return next();
+    if (!user) {return next(); }
 
     // check if token has expired
     if (new Date(user.signupTokenExpires) < new Date()) {
@@ -355,11 +351,11 @@ Signup.prototype.getSignupToken = function(req, res, next) {
       delete user.signupToken;
 
       // save updated user to db
-      adapter.update(user, function(err, user) {
-        if (err) return next(err);
+      return adapter.update(user, function(updateErr) {
+        if (updateErr) {return next(updateErr); }
 
         // send only JSON when REST is active
-        if (config.rest) return res.json(403, {error: 'token expired'});
+        if (config.rest) {return res.json(403, {error: 'token expired'}); }
 
         // custom or built-in view
         var expiredView = config.signup.views.linkExpired || join('link-expired');
@@ -372,7 +368,6 @@ Signup.prototype.getSignupToken = function(req, res, next) {
 
       });
 
-      return;
     }
 
     // everything seems to be fine
@@ -386,16 +381,16 @@ Signup.prototype.getSignupToken = function(req, res, next) {
     delete user.signupTokenExpires;
 
     // save user with updated values to db
-    adapter.update(user, function(err, user) {
-      if (err) return next(err);
+    adapter.update(user, function(updateErr, updatedUser) {
+      if (updateErr) {return next(updateErr); }
 
       // emit 'signup' event
-      that.emit('signup', user, res);
+      that.emit('signup', updatedUser, res);
 
       if (config.signup.handleResponse) {
 
         // send only JSON when REST is active
-        if (config.rest) return res.send(204);
+        if (config.rest) {return res.send(204); }
 
         // custom or built-in view
         var view = config.signup.views.verified || join('mail-verification-success');
