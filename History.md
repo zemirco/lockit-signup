@@ -1,4 +1,10 @@
 
+##### 1.2.1 / 2015-07-03
+
+- update dependencies
+- use eslint
+- use make instead grunt
+
 ##### 1.2.0 / 2014-09-27
 
 - update dependencies
