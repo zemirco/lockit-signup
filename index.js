@@ -179,7 +179,7 @@ Signup.prototype.postSignup = function(req, res, next) {
           if (signupErr) {return next(signupErr); }
 
           // emit event
-          that.emit('signup::post', savedUser);
+          that.emit('signup::post', savedUser, req);
 
           // send only JSON when REST is active
           if (config.rest) {return res.send(204); }
