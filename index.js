@@ -173,22 +173,30 @@ Signup.prototype.postSignup = function(req, res, next) {
       adapter.save(name, email, password, function(saveErr, savedUser) {
         if (saveErr) {return next(saveErr); }
 
-        // send email with link for address verification
-        var m = new Mail(config);
-        m.signup(savedUser.name, savedUser.email, savedUser.signupToken, function(signupErr) {
-          if (signupErr) {return next(signupErr); }
+        if (config.disableVerify) {
+          //append the user's token to the request
+          req.params.token = savedUser.signupToken;
 
-          // emit event
-          that.emit('signup::post', savedUser);
+          that.getSignupToken(req, res, next);
+        } else {
 
-          // send only JSON when REST is active
-          if (config.rest) {return res.send(204); }
+          // send email with link for address verification
+          var m = new Mail(config);
+          m.signup(savedUser.name, savedUser.email, savedUser.signupToken, function(signupErr) {
+            if (signupErr) {return next(signupErr); }
 
-          res.render(successView, {
-            title: 'Sign up - Email sent',
-            basedir: req.app.get('views')
+            // emit event
+            that.emit('signup::post', savedUser);
+
+            // send only JSON when REST is active
+            if (config.rest) {return res.send(204); }
+
+            res.render(successView, {
+              title: 'Sign up - Email sent',
+              basedir: req.app.get('views')
+            });
           });
-        });
+        }
 
       });
 
@@ -344,8 +352,8 @@ Signup.prototype.getSignupToken = function(req, res, next) {
     // no user found -> forward to error handling middleware
     if (!user) {return next(); }
 
-    // check if token has expired
-    if (new Date(user.signupTokenExpires) < new Date()) {
+    // check if token has expired and if signup verification is disabled
+    if (new Date(user.signupTokenExpires) < new Date() && !config.disableVerify) {
 
       // delete old token
       delete user.signupToken;
